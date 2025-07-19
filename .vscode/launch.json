@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Debug (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/mini_p_server",  // Исполняемый файл после сборки
+            "args": [],                                    // Аргументы командной строки
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",                  // Рабочая директория
+            "environment": [],
+            "externalConsole": false,                     // Использовать встроенный терминал
+            "MIMode": "gdb",                              // Режим отладчика
+            "setupCommands": [
+                {
+                    "description": "Включить pretty-printing для GDB",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build"                      // Сборка перед отладкой (нужен tasks.json)
+        }
+    ]
+}
