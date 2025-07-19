@@ -12,5 +12,8 @@ int main() {
         return 1;
     }
     std::cout << settings.udp_ip;
+
+
+    
     
 }
