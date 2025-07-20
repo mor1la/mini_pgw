@@ -6,7 +6,7 @@
 template<typename SettingsT>
 class IConfigLoader {
 public:
-    virtual bool loadFromFile(const std::string& path, SettingsT& settings) = 0;
+    virtual  SettingsT loadFromFile(const std::string& path) = 0;
     virtual ~IConfigLoader() = default;
 };
 

@@ -1,16 +1,21 @@
 #include "SessionManager.h"
 
-SessionManager::SessionManager(int timeoutSeconds)
-    : timeoutSeconds(timeoutSeconds) {}
+SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist)
+    : timeoutSeconds(timeoutSeconds), blacklist(blacklist) {}
 
 bool SessionManager::isBlacklisted(const std::string& imsi) const {
     return blacklist.find(imsi) != blacklist.end();
 }
 
 bool SessionManager::createSession(const std::string& imsi) {
+    if (isBlacklisted(imsi)) {
+        return false; 
+    }
+
     if (sessions.find(imsi) != sessions.end()) {
         return false; 
     }
+
     sessions[imsi] = std::chrono::steady_clock::now();
     return true;
 }

@@ -9,7 +9,7 @@
 
 class SessionManager {
 public:
-    SessionManager(int timeoutSeconds);
+    SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist);
 
     bool createSession(const std::string& imsi);
     bool hasSession(const std::string& imsi) const;

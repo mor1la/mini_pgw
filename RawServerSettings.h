@@ -1,9 +1,9 @@
-#ifndef SERVERSETTINGS_H
-#define SERVERSETTINGS_H
+#ifndef RAWSERVERSETTINGS_H
+#define RAWSERVERSETTINGS_H
 #include <string>
 #include <vector>
 
-struct ServerSettings {
+struct RawServerSettings {
     std::string udp_ip;
     int udp_port;
     int session_timeout_sec;

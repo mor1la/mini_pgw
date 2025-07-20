@@ -1,19 +1,18 @@
 # Компилятор
 CXX := g++
 # Флаги компиляции
-CXXFLAGS := -std=c++11 -Wall -Wextra -I. -IConfigLoader
+CXXFLAGS := -std=c++11 -Wall -Wextra -I. -IConfigLoader -g
 # Флаги линковки
 LDFLAGS := 
 # Имя исполняемого файла
 TARGET := mini_p_server
 
 # Исходные файлы (с указанием путей)
+
 SRCS := main.cpp UdpServer.cpp \
         ConfigLoader/ClientConfigLoader.cpp \
-        ConfigLoader/ServerConfigLo# Исходные файлы (с указанием путей)
-SRCS := main.cpp UdpServer.cpp \
-        ConfigLoader/ClientConfigLoader.cpp \
-        ConfigLoader/ServerConfigLoader.cpp
+        ConfigLoader/ServerConfigLoader.cpp \
+        SessionManager.cpp
 
 # Объектные файлы (с путями, чтобы избежать конфликтов)
 OBJS := $(SRCS:.cpp=.o)
