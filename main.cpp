@@ -1,10 +1,10 @@
-#include "./ServerSettings.h"
+#include "./RawServerSettings.h"
 #include "./ClientSettings.h"
 #include "./ConfigLoader/ServerConfigLoader.h"
 #include <iostream>
 
 int main() {
-    ServerSettings settings;
+    RawServerSettings settings;
     ServerConfigLoader loader;
 
     if (!loader.loadFromFile("config/server_config.json", settings)) {
@@ -12,8 +12,5 @@ int main() {
         return 1;
     }
     std::cout << settings.udp_ip;
-
-
-    
-    
+  
 }
