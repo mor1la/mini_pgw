@@ -36,6 +36,7 @@ int main() {
         "001010000000001"  // заблокированный
     };
 
+
     // Шаг 2: создаём SessionManager с таймаутом 2 секунды
     SessionManager manager(2, blacklist);
 
