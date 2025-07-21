@@ -1,7 +1,3 @@
-#include "./SettingsStructures/RawServerSettings.h"
-#include "./SettingsStructures/ClientSettings.h"
-#include "./ConfigLoader/ServerConfigLoader.h"
-#include "./ConfigLoader/ClientConfigLoader.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -9,27 +5,48 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include "SessionManager.h"
+#include "StructSplitter.h"
+#include "UdpServer.h"
+#include "UdpClient.h"
+#include "./SettingsStructures/RawServerSettings.h"
+#include "./SettingsStructures/ClientSettings.h"
+#include "./ConfigLoader/ServerConfigLoader.h"
+#include "./ConfigLoader/ClientConfigLoader.h"
+#include <spdlog/sinks/basic_file_sink.h>
+
 
 int main() {
-    ServerConfigLoader loader;
-    try {
-        auto settings = loader.loadFromFile("../../config/server_config.json");  
 
-        std::cout << settings.udp_ip;
-        std::cout << settings.cdr_file;
-        std::cout << settings.http_port;
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to load server config: " << e.what() << std::endl;
-        return 1;
-    }
+    auto file_logger = spdlog::basic_logger_mt("serverLogger", "server_log.txt"); 
 
-    try {
-        ClientConfigLoader loader;
-        ClientSettings settings = loader.loadFromFile("../../config/client_config.json");
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to load client config: " << e.what() << std::endl;
-        return 1;
-    }
+    spdlog::set_default_logger(file_logger);
+    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+    spdlog::set_level(spdlog::level::info);
+
+    spdlog::info("Logger initialized, application starting...");
+
+    // try {
+    //     auto serverSettings = loader.loadFromFile("../../config/server_config.json");  
+    // } catch (const std::exception& e) {
+    //     std::cerr << "Failed to load server config: " << e.what() << std::endl;
+    //     return 1;
+    // }
+    // try {
+    //     ClientConfigLoader loader;
+    //     ClientSettings clientSettings = loader.loadFromFile("../../config/client_config.json");
+    // } catch (const std::exception& e) {
+    //     std::cerr << "Failed to load client config: " << e.what() << std::endl;
+    //     return 1;
+    // }
+
+    ServerConfigLoader serverLoader;
+    auto serverSettings = serverLoader.loadFromFile("../../config/server_config.json"); 
+    ClientConfigLoader clientLoader;
+    ClientSettings clientSettings = clientLoader.loadFromFile("../../config/client_config.json");
+
+    
+    StructSplitter splitter;
+    auto udpServerSettings = splitter.makeUdpSettings(serverSettings);
 
     // Шаг 1: создаём чёрный список
     std::unordered_set<std::string> blacklist = {
@@ -70,11 +87,28 @@ int main() {
     }
 
 
-    auto console = spdlog::stdout_color_mt("console");
-    console->info("pgw_server стартовал!");
+    UdpServer udpServer(udpServerSettings, manager);
+    std::thread serverThread([&udpServer]() {
+        udpServer.start(); // blocking call
+    });
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    spdlog::set_level(spdlog::level::debug);
-    spdlog::debug("Это debug сообщение");
+    UdpClient udpClient(clientSettings);
 
+    std::string imsi = "001010123456780";
 
+    if (!udpClient.send_imsi(imsi)) {
+        std::cerr << "Client failed to send IMSI" << std::endl;
+    }
+
+    // Подождать немного для обработки
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    // === Gracefully shut down the server ===
+    udpServer.stop();
+
+    if (serverThread.joinable())
+        serverThread.join();
+    
+    return 0;
 }

@@ -23,7 +23,7 @@ RawServerSettings ServerConfigLoader::loadFromFile(const std::string& path) {
         settings.graceful_shutdown_rate = j.at("graceful_shutdown_rate").get<int>();
         settings.log_file = j.at("log_file").get<std::string>();
         settings.log_level = j.at("log_level").get<std::string>();
-        settings.blacklist = j.at("blacklist").get<std::vector<std::string>>();
+        settings.blacklist = j.at("blacklist").get<std::unordered_set<std::string>>();
     } catch (const nlohmann::json::exception& e) {
         throw std::runtime_error(std::string("Invalid or missing config field: ") + e.what());
     }
