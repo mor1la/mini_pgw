@@ -1,5 +1,5 @@
-#ifndef SESSION_MANAGER_H
-#define SESSION_MANAGER_H
+#ifndef SESSIONMANAGER_H
+#define SESSIONMANAGER_H
 
 #include <string>
 #include <unordered_map>

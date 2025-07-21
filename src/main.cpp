@@ -6,12 +6,14 @@
 #include <thread>
 #include <chrono>
 #include <unordered_set>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include "SessionManager.h"
 
 int main() {
     ServerConfigLoader loader;
     try {
-        auto settings = loader.loadFromFile("../config/server_config.json");  
+        auto settings = loader.loadFromFile("../../config/server_config.json");  
 
         std::cout << settings.udp_ip;
         std::cout << settings.cdr_file;
@@ -23,7 +25,7 @@ int main() {
 
     try {
         ClientConfigLoader loader;
-        ClientSettings settings = loader.loadFromFile("../config/client_config.json");
+        ClientSettings settings = loader.loadFromFile("../../config/client_config.json");
     } catch (const std::exception& e) {
         std::cerr << "Failed to load client config: " << e.what() << std::endl;
         return 1;
@@ -66,4 +68,13 @@ int main() {
     for (const std::string& imsi : expired) {
         std::cout << "Сессия просрочена и удалена: " << imsi << "\n";
     }
+
+
+    auto console = spdlog::stdout_color_mt("console");
+    console->info("pgw_server стартовал!");
+
+    spdlog::set_level(spdlog::level::debug);
+    spdlog::debug("Это debug сообщение");
+
+
 }
