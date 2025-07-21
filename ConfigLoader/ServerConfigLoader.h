@@ -1,7 +1,7 @@
 #ifndef SERVERCONFIGLOADER_H
 #define SERVERCONFIGLOADER_H
 #include "IConfigLoader.h"
-#include "../RawServerSettings.h"
+#include "./SettingsStructures/RawServerSettings.h"
 
 
 class ServerConfigLoader : public IConfigLoader<RawServerSettings> {

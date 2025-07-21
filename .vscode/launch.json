@@ -2,24 +2,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C++ Debug (GDB)",
+            "name": "Debug mini_p_server",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/mini_p_server",  // Исполняемый файл после сборки
-            "args": [],                                    // Аргументы командной строки
+            "program": "${workspaceFolder}/mini_p_server",
+            "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",                  // Рабочая директория
+            "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,                     // Использовать встроенный терминал
-            "MIMode": "gdb",                              // Режим отладчика
+            "externalConsole": false,
+            "MIMode": "gdb",
             "setupCommands": [
                 {
-                    "description": "Включить pretty-printing для GDB",
+                    "description": "Включение форматирования для gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build"                      // Сборка перед отладкой (нужен tasks.json)
+            "preLaunchTask": "build with make",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

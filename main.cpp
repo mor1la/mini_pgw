@@ -1,7 +1,7 @@
-#include "./RawServerSettings.h"
-#include "./ClientSettings.h"
+#include "./SettingsStructures/RawServerSettings.h"
+#include "./SettingsStructures/ClientSettings.h"
 #include "./ConfigLoader/ServerConfigLoader.h"
-#include "ClientConfigLoader.h"
+#include "./ConfigLoader/ClientConfigLoader.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -24,7 +24,6 @@ int main() {
     try {
         ClientConfigLoader loader;
         ClientSettings settings = loader.loadFromFile("config/client_config.json");
-        // Дальше используешь settings
     } catch (const std::exception& e) {
         std::cerr << "Failed to load client config: " << e.what() << std::endl;
         return 1;
