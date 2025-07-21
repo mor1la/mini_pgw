@@ -11,13 +11,15 @@ class SessionManager {
 public:
     SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist);
 
-    bool createSession(const std::string& imsi);
-    bool hasSession(const std::string& imsi) const;
+    bool initSession(const std::string& imsi);
     void removeSession(const std::string& imsi);
     std::vector<std::string> cleanupExpiredSessions();
 
 private:
     bool isBlacklisted(const std::string& imsi) const;
+    bool createSession(const std::string& imsi);
+    bool updateSession(const std::string &imsi);
+    bool hasSession(const std::string &imsi) const;
 
     int timeoutSeconds;
     std::unordered_set<std::string> blacklist;

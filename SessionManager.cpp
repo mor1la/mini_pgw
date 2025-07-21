@@ -3,28 +3,42 @@
 SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist)
     : timeoutSeconds(timeoutSeconds), blacklist(blacklist) {}
 
-bool SessionManager::isBlacklisted(const std::string& imsi) const {
+bool SessionManager::isBlacklisted(const std::string &imsi) const {
     return blacklist.find(imsi) != blacklist.end();
 }
 
-bool SessionManager::createSession(const std::string& imsi) {
+bool SessionManager::initSession(const std::string &imsi) {
     if (isBlacklisted(imsi)) {
         return false; 
     }
 
-    if (sessions.find(imsi) != sessions.end()) {
-        return false; 
+    if (updateSession(imsi) || createSession(imsi)) {
+        return true;
     }
 
+    return false;
+}
+
+bool SessionManager::updateSession(const std::string &imsi) {
+    if (hasSession(imsi)) {
+        sessions[imsi] = std::chrono::steady_clock::now();
+        // лог: Сессия обновлена
+        return true;
+    }
+    return false;
+}
+
+bool SessionManager::createSession(const std::string &imsi) {
     sessions[imsi] = std::chrono::steady_clock::now();
+    // лог: Сессия создана 
     return true;
 }
 
-bool SessionManager::hasSession(const std::string& imsi) const {
+bool SessionManager::hasSession(const std::string &imsi) const {
     return sessions.find(imsi) != sessions.end();
 }
 
-void SessionManager::removeSession(const std::string& imsi) {
+void SessionManager::removeSession(const std::string &imsi) {
     sessions.erase(imsi);
 }
 

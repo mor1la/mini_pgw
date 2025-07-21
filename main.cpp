@@ -44,23 +44,19 @@ int main() {
     std::string allowedImsi = "001010999999999";
     std::string blockedImsi = "001010123456789";
 
-    if (manager.createSession(allowedImsi)) {
+    if (manager.initSession(allowedImsi)) {
         std::cout << "Сессия создана для IMSI " << allowedImsi << "\n";
     } else {
         std::cout << "Сессия НЕ создана для IMSI " << allowedImsi << "\n";
     }
 
     // Шаг 4: пробуем создать сессию для запрещённого IMSI
-    if (manager.createSession(blockedImsi)) {
+    if (manager.initSession(blockedImsi)) {
         std::cout << "Сессия создана для IMSI " << blockedImsi << " (ошибка)\n";
     } else {
         std::cout << "Сессия отклонена (чёрный список) для IMSI " << blockedImsi << "\n";
     }
 
-    // Шаг 5: проверим наличие сессии
-    if (manager.hasSession(allowedImsi)) {
-        std::cout << "Сессия активна\n";
-    }
 
     // Шаг 6: ждём, чтобы таймаут сработал
     std::cout << "Ждём 3 секунды для проверки таймаута...\n";
