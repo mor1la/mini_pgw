@@ -7,6 +7,10 @@
 #include <chrono>
 #include <vector>
 
+// должен быть логер с проверкой 
+        // if (!logger) {
+        //     throw std::logic_error("Global clientLogger is not initialized");
+        // }
 class SessionManager {
 public:
     SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist);
@@ -27,3 +31,4 @@ private:
 };
 
 #endif 
+

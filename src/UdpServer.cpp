@@ -3,6 +3,9 @@
 UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager) :
     settings(settings), sessionManager(sessionManager){
         logger = spdlog::get("serverLogger");
+        if (!logger) {
+            throw std::logic_error("Global serverLogger is not initialized");
+        }
     }
 
 void UdpServer::start()
@@ -63,11 +66,10 @@ void UdpServer::run()
             //logger_.log_info("IMSI is failed(подумать над корр формулировкой): " + imsi);
         } else {
             response = Response::success;
-            std::cout << "SUCCESS" << std::endl;
             //cdr_writer_.write_cdr(imsi, "created");
             //logger_.log_info("Session created for IMSI: " + imsi);
         }
-
+        
         sendto(socket_fd, response.c_str(), response.size(), 0,
             (sockaddr*)&client_addr, client_len);
     }

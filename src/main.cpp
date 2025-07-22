@@ -88,9 +88,11 @@ int main() {
 
 
     UdpServer udpServer(udpServerSettings, manager);
+
     std::thread serverThread([&udpServer]() {
         udpServer.start(); // blocking call
     });
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     UdpClient udpClient(clientSettings);
@@ -99,8 +101,9 @@ int main() {
 
     if (!udpClient.send_imsi(imsi)) {
         std::cerr << "Client failed to send IMSI" << std::endl;
+        std::cout << "DLDLD" << "\n";
     }
-
+    
     // Подождать немного для обработки
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
