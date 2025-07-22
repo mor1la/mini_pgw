@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <chrono>
 #include <vector>
+#include <memory>
+#include <spdlog/spdlog.h>
 
 // должен быть логер с проверкой 
         // if (!logger) {
@@ -28,6 +30,7 @@ private:
     int timeoutSeconds;
     std::unordered_set<std::string> blacklist;
     std::unordered_map<std::string, std::chrono::steady_clock::time_point> sessions;
+    std::shared_ptr<spdlog::logger> logger;
 };
 
 #endif 
