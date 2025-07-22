@@ -1,5 +1,5 @@
 {
-    "udp_ip": "1.0.0.0",
+    "udp_ip": "0.0.0.0",
     "udp_port": 9000,
     "session_timeout_sec": 30,
     "cdr_file": "cdr.log",
