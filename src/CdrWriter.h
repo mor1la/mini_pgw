@@ -9,14 +9,19 @@
 
 class CdrWriter {
 public:
-    enum actions {
-        
-    }
+    enum Action {
+        Create,
+        Reject,
+        Delete,
+        Offload,
+        Update
+    };
+
     CdrWriter(const std::string& filename);
     ~CdrWriter();
 
     
-    void write(const std::string& imsi, const std::string& action);
+    void write(const std::string& imsi, Action action);
 
 private:
     std::ofstream cdrFile;
@@ -24,6 +29,7 @@ private:
     std::shared_ptr<spdlog::logger> logger;
 
     std::string getTimestamp();  
+    std::string actionToString(Action action);
 };
 
 #endif // CDRWRITER_H

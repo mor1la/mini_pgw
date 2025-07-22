@@ -20,11 +20,11 @@ CdrWriter::~CdrWriter() {
     }
 }
 
-void CdrWriter::write(const std::string& imsi, const std::string& action) {
+void CdrWriter::write(const std::string& imsi, Action action) {
     std::lock_guard<std::mutex> lock(writeMutex);
 
     std::string timestamp = getTimestamp();
-    cdrFile << timestamp << "," << imsi << "," << action << std::endl;
+    cdrFile << timestamp << "," << imsi << "," << actionToString(action) << std::endl;
 
     //logger->info("CDR entry written: {}, {}, {}", timestamp, imsi, action);
 }
@@ -39,4 +39,17 @@ std::string CdrWriter::getTimestamp() {
     std::ostringstream oss;
     oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
     return oss.str();
+}
+
+std::string CdrWriter::actionToString(Action action) {
+    static const std::unordered_map<Action, std::string> actionMap = {
+        {Action::Create, "create"},
+        {Action::Reject, "reject"},
+        {Action::Delete, "delete"},
+        {Action::Offload, "offload"},
+        {Action::Update, "update"}
+    };
+    
+    auto it = actionMap.find(action);
+    return it != actionMap.end() ? it->second : "unknown";
 }
