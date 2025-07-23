@@ -26,6 +26,7 @@ std::string UdpClient::encode_bcd(const std::string& imsi) {
 }
 
 bool UdpClient::send_imsi(const std::string& imsi) {
+    std::cout  << "Send IMSI" << std::endl;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         //logger_.log_error("Failed to create socket");

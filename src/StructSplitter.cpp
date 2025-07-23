@@ -17,5 +17,5 @@ LoggerSettings StructSplitter::makeLoggerSettings(const RawServerSettings &raw)
 
 SessionManagerSettings StructSplitter::makeSessionManagerSettings(const RawServerSettings &raw)
 {
-    return { raw.session_timeout_sec, raw.blacklist, raw.cdr_file};
+    return { raw.session_timeout_sec, raw.blacklist, raw.cdr_file };
 }

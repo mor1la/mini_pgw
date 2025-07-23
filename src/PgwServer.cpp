@@ -4,7 +4,7 @@
 
 PgwServer::PgwServer() {
     loadConfiguration();
-    initLogging(loggerSettings.log_file);
+    initLogging();
 
     sessionManager = std::make_unique<SessionManager>(
         sessionManagerSettings.timeoutSeconds,
@@ -22,24 +22,39 @@ PgwServer::~PgwServer() {
     stop();
 }
 
-void PgwServer::initLogging(const std::string& logFile) {
-    auto file_logger = spdlog::basic_logger_mt("serverLogger", logFile);
+void PgwServer::initLogging() {
+    auto file_logger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
     spdlog::set_default_logger(file_logger);
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    spdlog::set_level(spdlog::level::info);
 
-    spdlog::info("Logger initialized. Log file: {}", logFile);
+    if (loggerSettings.log_level == "DEBUG") {
+        spdlog::set_level(spdlog::level::debug);
+    } else if (loggerSettings.log_level == "INFO") {
+        spdlog::set_level(spdlog::level::info);
+    } else if (loggerSettings.log_level == "WARN") {
+        spdlog::set_level(spdlog::level::warn);
+    } else if (loggerSettings.log_level == "ERROR") {
+        spdlog::set_level(spdlog::level::err);
+    } else {
+        spdlog::set_level(spdlog::level::info); 
+    }
+    spdlog::flush_on(spdlog::level::info);
+
+    spdlog::info("Logger initialized. Log file: {}, level: {}", loggerSettings.log_file, loggerSettings.log_level);
 }
+
 
 void PgwServer::loadConfiguration() {
     ServerConfigLoader serverLoader;
-    serverSettings = serverLoader.loadFromFile("../../config/server_config.json");
+    auto rawServerSettings = serverLoader.loadFromFile("../../config/server_config.json");
 
     StructSplitter splitter;
-    udpSettings = splitter.makeUdpSettings(serverSettings);
-    httpSettings = splitter.makeHttpSettings(serverSettings);
-    loggerSettings = splitter.makeLoggerSettings(serverSettings);
-    sessionManagerSettings = splitter.makeSessionManagerSettings(serverSettings);
+    udpSettings = splitter.makeUdpSettings(rawServerSettings);
+    std::cout  <<  "udpSettings" << udpSettings.ip << std::endl;
+    std::cout  <<  "udpSettings" << udpSettings.port <<std::endl;
+    httpSettings = splitter.makeHttpSettings(rawServerSettings);
+    loggerSettings = splitter.makeLoggerSettings(rawServerSettings);
+    sessionManagerSettings = splitter.makeSessionManagerSettings(rawServerSettings);
 }
 
 void PgwServer::start() {
@@ -47,6 +62,7 @@ void PgwServer::start() {
 
     udpThread = std::thread([this]() {
         spdlog::info("Starting UDP server...");
+         std::cout << "[DEBUG] Starting UDP server thread...\n";
         udpServer->start();
     });
 

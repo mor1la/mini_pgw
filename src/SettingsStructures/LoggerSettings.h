@@ -5,7 +5,6 @@
 struct LoggerSettings {
     std::string log_file;
     std::string log_level;
-    
 };
 
 #endif

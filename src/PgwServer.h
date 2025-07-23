@@ -28,10 +28,9 @@ public:
     void stop();
 
 private:
-    void initLogging(const std::string& logFile);
+    void initLogging();
     void loadConfiguration();
 
-    RawServerSettings serverSettings;
     UdpServerSettings udpSettings;
     HttpApiServerSettings httpSettings;
     LoggerSettings loggerSettings;

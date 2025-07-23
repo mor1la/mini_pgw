@@ -6,12 +6,20 @@ UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionMa
         if (!logger) {
             throw std::logic_error("Global serverLogger is not initialized");
         }
+        socket_fd = -1;
     }
 
 void UdpServer::start()
 {
+    std::cout << "[DEBUG] UdpServer::start called\n";
+    if (isRunning.load()) {
+         std::cout << "[DEBUG] UdpServer already running. Ignoring start().\n";
+        //logger->warn("UdpServer already running. Ignoring start().");
+        return;
+    }
     isRunning = true;
     thread = std::thread(&UdpServer::run, this);
+    std::cout << "[DEBUG] UdpServer::start called function end\n";
 }
 
 
@@ -28,10 +36,12 @@ void UdpServer::stop()
 }
 
 void UdpServer::run()
-{
+{   
+    std::cout << "RUN FUNCTION";
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
         //logger_.log_error("Failed to create UDP socket");
+        std::cout << "Failed to create socket";
         return;
     }
 
@@ -42,6 +52,7 @@ void UdpServer::run()
 
     if (bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         //logger_.log_error("Failed to bind UDP socket");
+        std::cout << "Failed to bind socket: " ;
         return;
     }
 
@@ -51,8 +62,10 @@ void UdpServer::run()
     while (isRunning) {
         sockaddr_in client_addr{};
         socklen_t client_len = sizeof(client_addr);
+        std::cout << "created";
         ssize_t recv_len = recvfrom(socket_fd, buffer, sizeof(buffer), 0,
                                     (sockaddr*)&client_addr, &client_len);
+        std::cout << "created";
         if (recv_len <= 0) continue;
 
         std::string bcd_imsi(buffer, recv_len);
@@ -68,6 +81,7 @@ void UdpServer::run()
             response = Response::success;
             //cdr_writer_.write_cdr(imsi, "created");
             //logger_.log_info("Session created for IMSI: " + imsi);
+            std::cout << "created";
         }
         
         sendto(socket_fd, response.c_str(), response.size(), 0,
@@ -76,6 +90,8 @@ void UdpServer::run()
     //logger_.log_info("UDP server stopped");
     
 }
+
+
 
 
 std::string UdpServer::decodeBcd(const std::string& data) {
