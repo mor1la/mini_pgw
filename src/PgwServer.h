@@ -44,7 +44,7 @@ private:
     std::thread cleanupThread;
     std::atomic<bool> cleanupRunning{false};
 
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<spdlog::logger> serverLogger;
 };
 
 #endif // PGWSERVER_H

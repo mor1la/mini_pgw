@@ -26,7 +26,7 @@ public:
 private:
     std::ofstream cdrFile;
     std::mutex writeMutex;
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<spdlog::logger> serverLogger;
 
     std::string getTimestamp();  
     std::string actionToString(Action action);

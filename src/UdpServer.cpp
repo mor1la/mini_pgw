@@ -2,15 +2,15 @@
 
 UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager, CdrWriter &cdrWriter) :
     settings(settings), sessionManager(sessionManager), cdrWriter(cdrWriter) {
-        logger = spdlog::get("serverLogger");
-        if (!logger) {
+        serverLogger = spdlog::get("serverLogger");
+        if (!serverLogger) {
             throw std::logic_error("Global serverLogger is not initialized");
         }
     }
  
 void UdpServer::start() {
     if (isRunning.load()) {
-        logger->warn("UdpServer already running. Ignoring start().");
+        serverLogger->warn("UdpServer already running. Ignoring start().");
         return;
     }
     isRunning = true;
@@ -29,7 +29,7 @@ void UdpServer::stop() {
 void UdpServer::run() {
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
-        logger->error("Failed to create UDP socket");
+        serverLogger->error("Failed to create UDP socket");
         return;
     }
 
@@ -42,13 +42,13 @@ void UdpServer::run() {
     server_addr.sin_addr.s_addr = inet_addr(settings.ip.c_str());
 
     if (bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        logger->error("Failed to bind UDP socket: {}", strerror(errno));
+        serverLogger->error("Failed to bind UDP socket: {}", strerror(errno));
         return;
     }
 
     epoll_fd = epoll_create1(0);
     if (epoll_fd < 0) {
-        logger->error("epoll_create1 failed: {}", strerror(errno));
+        serverLogger->error("epoll_create1 failed: {}", strerror(errno));
         return;
     }
 
@@ -57,7 +57,7 @@ void UdpServer::run() {
     ev.data.fd = socket_fd;
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev);
 
-    logger->info("UDP server started on {}:{}", settings.ip, settings.port);
+    serverLogger->info("UDP server started on {}:{}", settings.ip, settings.port);
 
     char buffer[1024];
     epoll_event events[10];
@@ -78,7 +78,7 @@ void UdpServer::run() {
         }
     }
 
-    logger->info("PGW Server stopped.");
+    serverLogger->info("PGW Server stopped.");
 }
 
 void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {
@@ -86,11 +86,11 @@ void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr
     std::string response;
     if (!sessionManager.initSession(imsi)) {
         response = "rejected";
-        logger->info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
+        serverLogger->info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
         cdrWriter.write(imsi, CdrWriter::Action::Reject);
     } else {
         response = "created";
-        logger->info("Session created for IMSI {}", imsi);
+        serverLogger->info("Session created for IMSI {}", imsi);
         cdrWriter.write(imsi, CdrWriter::Action::Create);
     }
 

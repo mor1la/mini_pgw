@@ -32,7 +32,7 @@ private:
     const UdpServerSettings settings;
     SessionManager& sessionManager;
     CdrWriter& cdrWriter;
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<spdlog::logger> serverLogger;
     std::thread thread;
     int socket_fd{-1};
     int epoll_fd{-1};

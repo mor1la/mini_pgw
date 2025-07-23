@@ -8,8 +8,8 @@ CdrWriter::CdrWriter(const std::string& filename) {
     if (!cdrFile.is_open()) {
         throw std::runtime_error("Failed to open CDR file: " + filename);
     }
-    logger = spdlog::get("serverLogger");
-    if (!logger) {
+    serverLogger = spdlog::get("serverLogger");
+    if (!serverLogger) {
         throw std::logic_error("Global serverLogger is not initialized");
     }
 }
