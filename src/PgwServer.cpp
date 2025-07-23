@@ -11,24 +11,23 @@ PgwServer::~PgwServer() {
 }
 
 void PgwServer::initLogging(LoggerSettings loggerSettings) {
-    auto file_logger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
-    spdlog::set_default_logger(file_logger);
-    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-
+    logger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+    
     if (loggerSettings.log_level == "DEBUG") {
-        spdlog::set_level(spdlog::level::debug);
+        logger->set_level(spdlog::level::debug);
     } else if (loggerSettings.log_level == "INFO") {
-        spdlog::set_level(spdlog::level::info);
+        logger->set_level(spdlog::level::info);
     } else if (loggerSettings.log_level == "WARN") {
-        spdlog::set_level(spdlog::level::warn);
+        logger->set_level(spdlog::level::warn);
     } else if (loggerSettings.log_level == "ERROR") {
-        spdlog::set_level(spdlog::level::err);
+        logger->set_level(spdlog::level::err);
     } else {
-        spdlog::set_level(spdlog::level::info); 
+        logger->set_level(spdlog::level::info); 
     }
-    spdlog::flush_on(spdlog::level::info);
+    logger->flush_on(spdlog::level::info);
 
-    spdlog::info("Logger initialized. Log file: {}, level: {}", loggerSettings.log_file, loggerSettings.log_level);
+    logger->info("\nServerLogger initialized. Log file: {}, level: {}", loggerSettings.log_file, loggerSettings.log_level);
 }
 
 void PgwServer::loadConfiguration() {
@@ -55,22 +54,22 @@ void PgwServer::loadConfiguration() {
 
 void PgwServer::start() {
     running = true;
+    cleanupRunning = true;
 
     udpThread = std::thread([this]() {
-        spdlog::info("Starting UDP server...");
+        logger->info("Starting UDP server...");
         udpServer->start();
     });
 
     httpThread = std::thread([this]() {
-        spdlog::info("Starting HTTP server...");
+        logger->info("Starting HTTP server...");
         httpServer->start();
     });
 
-    spdlog::info("PGW Server started.");
+    logger->info("PGW Server started.");
 
-    cleanupRunning = true;
     cleanupThread = std::thread([this]() {
-    spdlog::info("Starting session cleanup thread...");
+    logger->info("Starting session cleanup thread...");
     while (cleanupRunning) {
         auto expiredSessions = sessionManager->cleanupExpiredSessions();
         for (const auto& session : expiredSessions) {
@@ -78,14 +77,15 @@ void PgwServer::start() {
         }
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
     }
-});
+    }   
+);
 
 }
 
 void PgwServer::stop() {
     if (!running) return;
 
-    spdlog::info("Stopping PGW Server...");
+    logger->info("Stopping PGW Server...");
 
     udpServer->stop();
     httpServer->stop();
@@ -97,7 +97,7 @@ void PgwServer::stop() {
     running = false;
     cleanupRunning = false;
 
-    spdlog::info("PGW Server stopped.");
+    logger->info("PGW Server stopped.");
 
 
 }

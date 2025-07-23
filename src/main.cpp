@@ -42,10 +42,9 @@ int main() {
         ClientConfigLoader clientLoader;
         ClientSettings clientSettings = clientLoader.loadFromFile("../../config/client_config.json");
         auto file_logger = spdlog::basic_logger_mt("clientLogger", clientSettings.log_file);
-        spdlog::set_default_logger(file_logger);
-        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-        spdlog::flush_on(spdlog::level::info);
-        spdlog::set_level(spdlog::level::info);
+        file_logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+        file_logger->set_level(spdlog::level::info); // задается
+        file_logger->flush_on(spdlog::level::info);
 
 
         // === Тестовый IMSI ===
@@ -54,9 +53,9 @@ int main() {
         UdpClient udpClient(clientSettings);
 
         if (udpClient.send_imsi(testImsi)) {
-            spdlog::info("IMSI {} sent successfully", testImsi);
+            file_logger->info("IMSI {} sent successfully", testImsi);
         } else {
-            spdlog::error("Failed to send IMSI {}", testImsi);
+            file_logger->error("Failed to send IMSI {}", testImsi);
         }
 
         // Подождать немного, чтобы сервер успел обработать

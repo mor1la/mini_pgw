@@ -10,7 +10,7 @@ UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionMa
  
 void UdpServer::start() {
     if (isRunning.load()) {
-        spdlog::warn("UdpServer already running. Ignoring start().");
+        logger->warn("UdpServer already running. Ignoring start().");
         return;
     }
     isRunning = true;
@@ -29,7 +29,7 @@ void UdpServer::stop() {
 void UdpServer::run() {
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
-        spdlog::error("Failed to create UDP socket");
+        logger->error("Failed to create UDP socket");
         return;
     }
 
@@ -42,13 +42,13 @@ void UdpServer::run() {
     server_addr.sin_addr.s_addr = inet_addr(settings.ip.c_str());
 
     if (bind(socket_fd, (sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        spdlog::error("Failed to bind UDP socket: {}", strerror(errno));
+        logger->error("Failed to bind UDP socket: {}", strerror(errno));
         return;
     }
 
     epoll_fd = epoll_create1(0);
     if (epoll_fd < 0) {
-        spdlog::error("epoll_create1 failed: {}", strerror(errno));
+        logger->error("epoll_create1 failed: {}", strerror(errno));
         return;
     }
 
@@ -57,7 +57,7 @@ void UdpServer::run() {
     ev.data.fd = socket_fd;
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev);
 
-    spdlog::info("UDP server started on {}:{}", settings.ip, settings.port);
+    logger->info("UDP server started on {}:{}", settings.ip, settings.port);
 
     char buffer[1024];
     epoll_event events[10];
@@ -78,7 +78,7 @@ void UdpServer::run() {
         }
     }
 
-    spdlog::info("PGW Server stopped.");
+    logger->info("PGW Server stopped.");
 }
 
 void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {
@@ -86,11 +86,11 @@ void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr
     std::string response;
     if (!sessionManager.initSession(imsi)) {
         response = "rejected";
-        spdlog::info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
+        logger->info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
         cdrWriter.write(imsi, CdrWriter::Action::Reject);
     } else {
         response = "created";
-        spdlog::info("Session created for IMSI {}", imsi);
+        logger->info("Session created for IMSI {}", imsi);
         cdrWriter.write(imsi, CdrWriter::Action::Create);
     }
 
