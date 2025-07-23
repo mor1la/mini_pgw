@@ -19,13 +19,15 @@ UdpClient::UdpClient(const ClientSettings& settings)
 std::string UdpClient::encode_bcd(const std::string& imsi) {
     std::string result;
     for (size_t i = 0; i < imsi.length(); i += 2) {
-        char high = imsi[i];
-        char low = (i + 1 < imsi.length()) ? imsi[i + 1] : 'F';
-        unsigned char bcd = ((low - '0') & 0x0F) << 4 | ((high - '0') & 0x0F);
-        result.push_back(bcd);
+        uint8_t digit1 = imsi[i] - '0';
+        uint8_t digit2 = (i + 1 < imsi.length()) ? (imsi[i + 1] - '0') : 0x0F; // Padding
+
+        uint8_t byte = (digit2 << 4) | digit1;  // digit1 = младший, digit2 = старший
+        result.push_back(byte);
     }
     return result;
 }
+
 
 bool UdpClient::send_imsi(const std::string& imsi) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);

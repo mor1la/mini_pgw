@@ -84,7 +84,6 @@ void UdpServer::run() {
 void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {
     std::string imsi = decodeBcd(bcd_imsi);
     std::string response;
-
     if (!sessionManager.initSession(imsi)) {
         response = "rejected";
         spdlog::info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
