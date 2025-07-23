@@ -26,7 +26,6 @@ std::string UdpClient::encode_bcd(const std::string& imsi) {
 }
 
 bool UdpClient::send_imsi(const std::string& imsi) {
-    std::cout  << "Send IMSI" << std::endl;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         //logger_.log_error("Failed to create socket");
@@ -48,13 +47,11 @@ bool UdpClient::send_imsi(const std::string& imsi) {
         close(sockfd);
         return false;
     }
-    std::cout << "DECODE1\n";
     char buffer[1024];
     sockaddr_in from_addr{};
     socklen_t from_len = sizeof(from_addr);
     ssize_t received = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
                                 (sockaddr*)&from_addr, &from_len);
-    std::cout << "DECODE2\n";
     close(sockfd);
 
     if (received <= 0) {
@@ -63,10 +60,8 @@ bool UdpClient::send_imsi(const std::string& imsi) {
     }
 
     buffer[received] = '\0';
-    std::cout << "DECODE3\n";
     std::string response(buffer);
     //logger_.log_info("Received response: " + response);
-    std::cout << "Server response: " << response << std::endl;
 
     return true;
 }

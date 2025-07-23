@@ -48,7 +48,7 @@ void PgwServer::loadConfiguration() {
         sessionSettings.blacklist
     );
     cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
-    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
+    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager, *cdrWriter);
     httpServer = std::make_unique<HttpServer>(httpSettings);
 }
 
