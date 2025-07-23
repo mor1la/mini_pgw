@@ -15,6 +15,8 @@ PgwServer::PgwServer() {
 
     udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
 
+    cdrWriter = std::make_unique<CdrWriter>(sessionManagerSettings.cdrFilePath);
+
     httpServer = std::make_unique<HttpServer>(httpSettings); // временная заглушка
 }
 
@@ -50,8 +52,6 @@ void PgwServer::loadConfiguration() {
 
     StructSplitter splitter;
     udpSettings = splitter.makeUdpSettings(rawServerSettings);
-    std::cout  <<  "udpSettings" << udpSettings.ip << std::endl;
-    std::cout  <<  "udpSettings" << udpSettings.port <<std::endl;
     httpSettings = splitter.makeHttpSettings(rawServerSettings);
     loggerSettings = splitter.makeLoggerSettings(rawServerSettings);
     sessionManagerSettings = splitter.makeSessionManagerSettings(rawServerSettings);

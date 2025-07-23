@@ -1,7 +1,12 @@
 #include "SessionManager.h"
 
 SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist)
-    : timeoutSeconds(timeoutSeconds), blacklist(blacklist) {}
+    : timeoutSeconds(timeoutSeconds), blacklist(blacklist) {
+        logger = spdlog::get("serverLogger");
+        if (!logger) {
+            throw std::logic_error("Global clientLogger is not initialized");
+        }
+    }
 
 bool SessionManager::isBlacklisted(const std::string &imsi) const {
     return blacklist.find(imsi) != blacklist.end();

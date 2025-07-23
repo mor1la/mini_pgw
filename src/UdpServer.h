@@ -13,6 +13,7 @@
 #include "SessionManager.h"
 #include "./Consts/ResponseConsts.h"
 #include <iostream>
+#include "CdrWriter.h"
 
 
 class UdpServer {
@@ -23,13 +24,16 @@ public:
     
 private:
     void run();
-    std::string decodeBcd(const std::string& data);
+    void handleImsi(const std::string &bcd_imsi, sockaddr_in &client_addr);
+    std::string decodeBcd(const std::string &data);
 
     const UdpServerSettings settings;
     SessionManager& sessionManager;
+    CdrWriter& cdrWriter;
     std::shared_ptr<spdlog::logger> logger;
     std::thread thread;
-    int socket_fd;
+    int socket_fd{-1};
+    int epoll_fd{-1};
     std::atomic<bool> isRunning{false};
 
 };  
