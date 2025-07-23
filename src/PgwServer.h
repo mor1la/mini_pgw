@@ -11,6 +11,8 @@
 #include "StructSplitter.h"
 
 
+
+
 // Заглушка для будущего HTTP-сервера
 class HttpServer {
 public:
@@ -28,14 +30,9 @@ public:
     void stop();
 
 private:
-    void initLogging();
+    void initLogging(LoggerSettings loggerSettings);
     void loadConfiguration();
-
-    UdpServerSettings udpSettings;
-    HttpApiServerSettings httpSettings;
-    LoggerSettings loggerSettings;
-    SessionManagerSettings sessionManagerSettings;
-
+    
     std::unique_ptr<SessionManager> sessionManager;
     std::unique_ptr<CdrWriter> cdrWriter;
     std::unique_ptr<UdpServer> udpServer;

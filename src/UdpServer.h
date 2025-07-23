@@ -14,11 +14,13 @@
 #include "./Consts/ResponseConsts.h"
 #include <iostream>
 #include "CdrWriter.h"
+#include <fcntl.h>     
+#include <unistd.h>    
 
 
 class UdpServer {
 public:
-    UdpServer(const UdpServerSettings settings, SessionManager& sessionManager);
+    UdpServer(const UdpServerSettings settings, SessionManager& sessionManager, CdrWriter& cdrWriter);
     void start();
     void stop();
     

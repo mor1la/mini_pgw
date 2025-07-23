@@ -4,27 +4,13 @@
 
 PgwServer::PgwServer() {
     loadConfiguration();
-    initLogging();
-
-    sessionManager = std::make_unique<SessionManager>(
-        sessionManagerSettings.timeoutSeconds,
-        sessionManagerSettings.blacklist
-    );
-
-    cdrWriter = std::make_unique<CdrWriter>(sessionManagerSettings.cdrFilePath);
-
-    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
-
-    cdrWriter = std::make_unique<CdrWriter>(sessionManagerSettings.cdrFilePath);
-
-    httpServer = std::make_unique<HttpServer>(httpSettings); // временная заглушка
 }
 
 PgwServer::~PgwServer() {
     stop();
 }
 
-void PgwServer::initLogging() {
+void PgwServer::initLogging(LoggerSettings loggerSettings) {
     auto file_logger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
     spdlog::set_default_logger(file_logger);
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
@@ -45,24 +31,33 @@ void PgwServer::initLogging() {
     spdlog::info("Logger initialized. Log file: {}, level: {}", loggerSettings.log_file, loggerSettings.log_level);
 }
 
-
 void PgwServer::loadConfiguration() {
-    ServerConfigLoader serverLoader;
-    auto rawServerSettings = serverLoader.loadFromFile("../../config/server_config.json");
+    ServerConfigLoader loader;
+    auto raw = loader.loadFromFile("../../config/server_config.json");
 
     StructSplitter splitter;
-    udpSettings = splitter.makeUdpSettings(rawServerSettings);
-    httpSettings = splitter.makeHttpSettings(rawServerSettings);
-    loggerSettings = splitter.makeLoggerSettings(rawServerSettings);
-    sessionManagerSettings = splitter.makeSessionManagerSettings(rawServerSettings);
+    auto udpSettings = splitter.makeUdpSettings(raw);
+    auto httpSettings = splitter.makeHttpSettings(raw);
+    auto loggerSettings = splitter.makeLoggerSettings(raw);
+    auto sessionSettings = splitter.makeSessionManagerSettings(raw);
+
+    initLogging(loggerSettings);
+
+    sessionManager = std::make_unique<SessionManager>(
+        sessionSettings.timeoutSeconds,
+        sessionSettings.blacklist
+    );
+    cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
+    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
+    httpServer = std::make_unique<HttpServer>(httpSettings);
 }
+
 
 void PgwServer::start() {
     running = true;
 
     udpThread = std::thread([this]() {
         spdlog::info("Starting UDP server...");
-         std::cout << "[DEBUG] Starting UDP server thread...\n";
         udpServer->start();
     });
 
