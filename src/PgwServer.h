@@ -11,8 +11,6 @@
 #include "StructSplitter.h"
 
 
-
-
 // Заглушка для будущего HTTP-сервера
 class HttpServer {
 public:
@@ -32,7 +30,7 @@ public:
 private:
     void initLogging(LoggerSettings loggerSettings);
     void loadConfiguration();
-    
+
     std::unique_ptr<SessionManager> sessionManager;
     std::unique_ptr<CdrWriter> cdrWriter;
     std::unique_ptr<UdpServer> udpServer;
@@ -42,6 +40,9 @@ private:
     std::thread httpThread;
 
     std::atomic<bool> running{false};
+
+    std::thread cleanupThread;
+    std::atomic<bool> cleanupRunning{false};
 };
 
 #endif // PGWSERVER_H

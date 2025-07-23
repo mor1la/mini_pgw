@@ -67,6 +67,19 @@ void PgwServer::start() {
     });
 
     spdlog::info("PGW Server started.");
+
+    cleanupRunning = true;
+    cleanupThread = std::thread([this]() {
+    spdlog::info("Starting session cleanup thread...");
+    while (cleanupRunning) {
+        auto expiredSessions = sessionManager->cleanupExpiredSessions();
+        for (const auto& session : expiredSessions) {
+            cdrWriter->write(session, CdrWriter::Action::Delete);
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
+    }
+});
+
 }
 
 void PgwServer::stop() {
@@ -79,8 +92,12 @@ void PgwServer::stop() {
 
     if (udpThread.joinable()) udpThread.join();
     if (httpThread.joinable()) httpThread.join();
+    if (cleanupThread.joinable()) cleanupThread.join();
 
     running = false;
+    cleanupRunning = false;
 
     spdlog::info("PGW Server stopped.");
+
+
 }
