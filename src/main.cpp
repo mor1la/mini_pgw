@@ -48,14 +48,22 @@ int main() {
 
 
         // === Тестовый IMSI ===
-        std::string testImsi = "001010123456789";
+        std::string testImsi1 = "001010123456789";
+        std::string testImsi2 = "001010123456786";
 
-        UdpClient udpClient(clientSettings);
+        UdpClient udpClient1(clientSettings);
+        UdpClient udpClient2(clientSettings);
 
-        if (udpClient.send_imsi(testImsi)) {
-            file_logger->info("IMSI {} sent successfully", testImsi);
+        if (udpClient1.send_imsi(testImsi1)) {
+            file_logger->info("IMSI {} sent successfully", testImsi1);
         } else {
-            file_logger->error("Failed to send IMSI {}", testImsi);
+            file_logger->error("Failed to send IMSI {}", testImsi1);
+        }
+
+        if (udpClient2.send_imsi(testImsi2)) {
+            file_logger->info("IMSI {} sent successfully", testImsi2);
+        } else {
+            file_logger->error("Failed to send IMSI {}", testImsi2);
         }
 
         // Подождать немного, чтобы сервер успел обработать

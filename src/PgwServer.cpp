@@ -87,15 +87,17 @@ void PgwServer::stop() {
 
     serverLogger->info("Stopping PGW Server...");
 
+    running = false;
+    cleanupRunning = false;
+
     udpServer->stop();
     httpServer->stop();
+
 
     if (udpThread.joinable()) udpThread.join();
     if (httpThread.joinable()) httpThread.join();
     if (cleanupThread.joinable()) cleanupThread.join();
 
-    running = false;
-    cleanupRunning = false;
 
     serverLogger->info("PGW Server stopped.");
 

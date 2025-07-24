@@ -1,4 +1,5 @@
 #include "UdpServer.h"
+//#include <bin_to_hex.h>
 
 UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager, CdrWriter &cdrWriter) :
     settings(settings), sessionManager(sessionManager), cdrWriter(cdrWriter) {
@@ -83,6 +84,12 @@ void UdpServer::run() {
 
 void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {
     std::string imsi = decodeBcd(bcd_imsi);
+
+    if (imsi.empty()) {
+        serverLogger->warn("Decoded IMSI is empty. Ignoring request.");
+        return;
+    }
+
     std::string response;
     if (!sessionManager.initSession(imsi)) {
         response = "rejected";
