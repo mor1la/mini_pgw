@@ -56,19 +56,19 @@ void PgwServer::start() {
     running = true;
     cleanupRunning = true;
 
-    udpThread = std::thread([this]() {
+    udpThread = std::make_unique<std::thread>([this]() {
         serverLogger->info("Starting UDP server...");
         udpServer->start();
     });
 
-    httpThread = std::thread([this]() {
+    httpThread = std::make_unique<std::thread>([this]() {
         serverLogger->info("Starting HTTP server...");
         httpServer->start();
     });
 
     serverLogger->info("PGW Server started.");
 
-    cleanupThread = std::thread([this]() {
+    cleanupThread = std::make_unique<std::thread>([this]() {
     serverLogger->info("Starting session cleanup thread...");
     while (cleanupRunning) {
         auto expiredSessions = sessionManager->cleanupExpiredSessions();
@@ -94,9 +94,10 @@ void PgwServer::stop() {
     httpServer->stop();
 
 
-    if (udpThread.joinable()) udpThread.join();
-    if (httpThread.joinable()) httpThread.join();
-    if (cleanupThread.joinable()) cleanupThread.join();
+    if (udpThread && udpThread->joinable()) udpThread->join();
+    if (httpThread && httpThread->joinable()) httpThread->join();
+    if (cleanupThread && cleanupThread->joinable()) cleanupThread->join();
+
 
 
     serverLogger->info("PGW Server stopped.");

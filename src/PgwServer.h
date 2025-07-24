@@ -36,12 +36,11 @@ private:
     std::unique_ptr<UdpServer> udpServer;
     std::unique_ptr<HttpServer> httpServer;
 
-    std::thread udpThread;
-    std::thread httpThread;
+    std::unique_ptr<std::thread> udpThread;
+    std::unique_ptr<std::thread> httpThread;
+    std::unique_ptr<std::thread> cleanupThread;
 
     std::atomic<bool> running{false};
-
-    std::thread cleanupThread;
     std::atomic<bool> cleanupRunning{false};
 
     std::shared_ptr<spdlog::logger> serverLogger;
