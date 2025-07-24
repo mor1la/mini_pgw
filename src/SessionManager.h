@@ -14,8 +14,6 @@ public:
     bool initSession(const std::string &imsi);
     bool isBlacklisted(const std::string &imsi) const;
 
-    bool updateSession(const std::string &imsi);
-    bool createSession(const std::string &imsi);
     bool hasSession(const std::string &imsi) const;
 
     void removeSession(const std::string &imsi);

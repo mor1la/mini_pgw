@@ -78,8 +78,6 @@ void UdpServer::run() {
             }
         }
     }
-
-    serverLogger->info("PGW Server stopped.");
 }
 
 void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {

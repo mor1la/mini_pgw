@@ -37,23 +37,6 @@ bool SessionManager::hasSession(const std::string &imsi) const {
     return sessions.find(imsi) != sessions.end();
 }
 
-bool SessionManager::updateSession(const std::string &imsi) {
-    std::lock_guard<std::mutex> lock(sessionMutex);
-    if (sessions.find(imsi) != sessions.end()) {
-        sessions[imsi] = std::chrono::steady_clock::now();
-        serverLogger->debug("Session updated for IMSI {}", imsi);
-        return true;
-    }
-    return false;
-}
-
-bool SessionManager::createSession(const std::string &imsi) {
-    std::lock_guard<std::mutex> lock(sessionMutex);
-    sessions[imsi] = std::chrono::steady_clock::now();
-    serverLogger->debug("Session created for IMSI {}", imsi);
-    return true;
-}
-
 void SessionManager::removeSession(const std::string &imsi) {
     std::lock_guard<std::mutex> lock(sessionMutex);
     sessions.erase(imsi);
@@ -78,8 +61,9 @@ std::vector<std::string> SessionManager::cleanupExpiredSessions() {
             ++it;
         }
     }
-
-    serverLogger->info("Cleanup finished. {} expired session(s) removed.", removedImsis.size());
+    if (removedImsis.size() > 0) {
+        serverLogger->info("Cleanup finished. {} expired session(s) removed.", removedImsis.size());
+    }
     return removedImsis;
 }
 
