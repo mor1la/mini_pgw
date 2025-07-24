@@ -19,6 +19,7 @@ public:
     void removeSession(const std::string &imsi);
     std::vector<std::string> cleanupExpiredSessions();
 
+    std::unordered_map<std::string, std::chrono::steady_clock::time_point> getAllSessions() const;
 private:
     int timeoutSeconds;
     std::unordered_set<std::string> blacklist;

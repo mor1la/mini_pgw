@@ -9,15 +9,7 @@
 #include "./ConfigLoader/ServerConfigLoader.h"
 #include "./ConfigLoader/ClientConfigLoader.h"
 #include "StructSplitter.h"
-
-
-// Заглушка для будущего HTTP-сервера
-class HttpServer {
-public:
-    HttpServer(const HttpApiServerSettings&) {}
-    void start() {}
-    void stop() {}
-};
+#include "HttpServer.h"
 
 class PgwServer {
 public:
@@ -46,7 +38,7 @@ private:
     std::shared_ptr<spdlog::logger> serverLogger;
 };
 
-#endif // PGWSERVER_H
+#endif 
 
 
 

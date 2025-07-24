@@ -46,9 +46,10 @@ void PgwServer::loadConfiguration() {
         sessionSettings.timeoutSeconds,
         sessionSettings.blacklist
     );
+
     cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
     udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager, *cdrWriter);
-    httpServer = std::make_unique<HttpServer>(httpSettings);
+    httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager);
 }
 
 
@@ -75,7 +76,7 @@ void PgwServer::start() {
         for (const auto& session : expiredSessions) {
             cdrWriter->write(session, CdrWriter::Action::Delete);
         }
-        std::this_thread::sleep_for(std::chrono::seconds(1)); 
+        std::this_thread::sleep_for(std::chrono::milliseconds(500)); 
     }
     }   
 );
@@ -93,14 +94,9 @@ void PgwServer::stop() {
     udpServer->stop();
     httpServer->stop();
 
-
     if (udpThread && udpThread->joinable()) udpThread->join();
     if (httpThread && httpThread->joinable()) httpThread->join();
     if (cleanupThread && cleanupThread->joinable()) cleanupThread->join();
 
-
-
     serverLogger->info("PGW Server stopped.");
-
-
 }

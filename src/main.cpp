@@ -67,7 +67,7 @@ int main() {
         }
 
         // Подождать немного, чтобы сервер успел обработать
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        //std::this_thread::sleep_for(std::chrono::seconds(40));
 
         // === Завершить работу ===
         server->stop();

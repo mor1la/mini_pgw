@@ -1,5 +1,4 @@
 #include "UdpServer.h"
-//#include <bin_to_hex.h>
 
 UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager, CdrWriter &cdrWriter) :
     settings(settings), sessionManager(sessionManager), cdrWriter(cdrWriter) {

@@ -51,19 +51,24 @@ std::vector<std::string> SessionManager::cleanupExpiredSessions() {
 
     for (auto it = sessions.begin(); it != sessions.end(); ) {
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - it->second).count();
-        if (elapsed > timeoutSeconds) {
+        if (elapsed >= timeoutSeconds) {
             std::string imsi = it->first;
             removedImsis.push_back(imsi);
             it = sessions.erase(it);
 
-            serverLogger->debug("Session for IMSI {} expired and was removed after {} seconds", imsi, elapsed);
+            serverLogger->info("Session for IMSI {} expired and was removed after {} seconds", imsi, elapsed);
         } else {
             ++it;
         }
-    }
+    }   
     if (removedImsis.size() > 0) {
         serverLogger->info("Cleanup finished. {} expired session(s) removed.", removedImsis.size());
     }
+
     return removedImsis;
 }
 
+std::unordered_map<std::string, std::chrono::steady_clock::time_point> SessionManager::getAllSessions() const {
+    std::lock_guard<std::mutex> lock(sessionMutex);
+    return sessions;
+}
