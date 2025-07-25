@@ -3,19 +3,23 @@
 
 #include <string>
 #include "./SettingsStructures/ClientSettings.h"
+#include "./ConfigLoader/ClientConfigLoader.h"
+#include "StructSplitter.h"
+#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
 class UdpClient {
 public:
-    UdpClient(const ClientSettings& settings);
+    UdpClient();
     bool send_imsi(const std::string& imsi); 
 
 private:
     std::string encode_bcd(const std::string& imsi);
 
-    const ClientSettings& clientSettings;
+    ClientSettings clientSettings;
     std::shared_ptr<spdlog::logger> clientLogger;
     void initLogging();
+    void loadConfiguration();
 };
 
 #endif

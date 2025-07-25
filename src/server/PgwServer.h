@@ -7,7 +7,6 @@
 #include "SessionManager.h"
 #include "CdrWriter.h"
 #include "./ConfigLoader/ServerConfigLoader.h"
-#include "./ConfigLoader/ClientConfigLoader.h"
 #include "StructSplitter.h"
 
 class HttpServer;

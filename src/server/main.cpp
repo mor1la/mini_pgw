@@ -1,82 +1,42 @@
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <csignal>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
-
 #include "PgwServer.h"
-//#include "UdpClient.h"
-#include "./ConfigLoader/ClientConfigLoader.h"
+#include <csignal>
+#include <atomic>
+#include <iostream>
 
-std::unique_ptr<PgwServer> server;
+std::atomic<bool> terminateRequested(false);
+PgwServer* serverPtr = nullptr;
 
 void signalHandler(int signum) {
-    spdlog::warn("Interrupt signal ({}) received. Stopping server...", signum);
-    if (server) {
-        server->stop();
+    std::cout << "\nSignal " << signum << " received. Shutting down PGW Server...\n";
+    terminateRequested = true;
+    if (serverPtr) {
+        serverPtr->stop();
     }
-    std::_Exit(signum);  // экстренный выход
 }
 
 int main() {
-    // try {
-    //     // === Установить логгер для старта ===
-    //     auto logger = spdlog::basic_logger_mt("startupLogger", "startup_log.txt");
-    //     spdlog::set_default_logger(logger);
-    //     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    //     spdlog::flush_on(spdlog::level::info);
-    //     spdlog::set_level(spdlog::level::info);
+    try {
+        PgwServer server;
+        serverPtr = &server;
 
-    //     spdlog::info("Starting PGW server...");
+        // Обработка Ctrl+C и других сигналов завершения
+        std::signal(SIGINT, signalHandler);
+        std::signal(SIGTERM, signalHandler);
 
+        server.start();
 
-    //     // === Запускаем сервер ===
-    //     server = std::make_unique<PgwServer>();
-    //     server->start();
+        // Ожидание сигнала завершения
+        while (!terminateRequested) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
 
-    //     // === Ждём немного, чтобы сервер запустился ===
-    //     std::this_thread::sleep_for(std::chrono::seconds(1));
+        // Stop уже вызван из signalHandler, но можно и здесь на всякий случай
+        server.stop();
 
-    //     // === Загружаем конфиг клиента ===
-    //     ClientConfigLoader clientLoader;
-    //     ClientSettings clientSettings = clientLoader.loadFromFile("../../config/client_config.json");
-    //     auto file_logger = spdlog::basic_logger_mt("clientLogger", clientSettings.log_file);
-    //     file_logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    //     file_logger->set_level(spdlog::level::info); // задается
-    //     file_logger->flush_on(spdlog::level::info);
-
-
-    //     // === Тестовый IMSI ===
-    //     std::string testImsi1 = "001010123456789";
-    //     std::string testImsi2 = "001010123456786";
-
-    //     UdpClient udpClient1(clientSettings);
-    //     UdpClient udpClient2(clientSettings);
-
-    //     if (udpClient1.send_imsi(testImsi1)) {
-    //         file_logger->info("IMSI {} sent successfully", testImsi1);
-    //     } else {
-    //         file_logger->error("Failed to send IMSI {}", testImsi1);
-    //     }
-
-    //     if (udpClient2.send_imsi(testImsi2)) {
-    //         file_logger->info("IMSI {} sent successfully", testImsi2);
-    //     } else {
-    //         file_logger->error("Failed to send IMSI {}", testImsi2);
-    //     }
-
-    //     // Подождать немного, чтобы сервер успел обработать
-    //     //std::this_thread::sleep_for(std::chrono::seconds(40));
-
-    //     // === Завершить работу ===
-    //     server->stop();
-    //     spdlog::info("PGW server stopped cleanly");
-
-    // } catch (const std::exception& e) {
-    //     spdlog::critical("Fatal error: {}", e.what());
-    //     return 1;
-    // }
+    } catch (const std::exception& ex) {
+        std::cerr << "Server initialization failed: " << ex.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }

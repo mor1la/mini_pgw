@@ -7,11 +7,10 @@
 #include <sys/epoll.h>
 #include <cstring>
 #include <iostream>
-#include <basic_file_sink.h>
 
-UdpClient::UdpClient(const ClientSettings& clientSettings)
+UdpClient::UdpClient()
     : clientSettings(clientSettings) {
-    initLogging();
+    loadConfiguration();
     clientLogger = spdlog::get("clientLogger");
     if (!clientLogger) {
         throw std::logic_error("Global clientLogger is not initialized");
@@ -140,4 +139,11 @@ bool UdpClient::send_imsi(const std::string& imsi) {
     close(epoll_fd);
     close(sockfd);
     return true;
+}
+
+void UdpClient::loadConfiguration() {
+    ClientConfigLoader loader;
+    clientSettings = loader.loadFromFile("../../config/client_config.json");
+
+    initLogging();
 }
