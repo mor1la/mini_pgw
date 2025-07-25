@@ -9,7 +9,9 @@
 #include "./ConfigLoader/ServerConfigLoader.h"
 #include "./ConfigLoader/ClientConfigLoader.h"
 #include "StructSplitter.h"
-#include "HttpServer.h"
+
+class HttpServer;
+
 
 class PgwServer {
 public:

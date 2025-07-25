@@ -1,4 +1,5 @@
 #include "PgwServer.h"
+#include "HttpServer.h"  
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -7,8 +8,20 @@ PgwServer::PgwServer() {
 }
 
 PgwServer::~PgwServer() {
-    stop();
+    serverLogger->info("DESTRUCTOR");
+    if (running || cleanupRunning) {
+        stop();
+    }
+
+    udpServer.reset();
+    httpServer.reset();
+    sessionManager.reset();
+    cdrWriter.reset();
+
+    serverLogger->info("DESTRUCTOR");
+    //spdlog::drop("serverLogger"); 
 }
+
 
 void PgwServer::initLogging(LoggerSettings loggerSettings) {
     serverLogger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
@@ -90,6 +103,8 @@ void PgwServer::stop() {
 
     running = false;
     cleanupRunning = false;
+
+    serverLogger->info("ALO");
 
     udpServer->stop();
     httpServer->stop();
