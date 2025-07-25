@@ -38,11 +38,7 @@ void HttpServer::start() {
     });
 
     serverThread = std::thread([this]() {
-        try {
-            app.port(settings.port).multithreaded().concurrency(4).run();
-        } catch (const std::exception& e) {
-            serverLogger->error("Exception in HTTP server thread: {}", e.what());
-        }
+        app.port(settings.port).multithreaded().concurrency(4).run();
     });
 }
 
