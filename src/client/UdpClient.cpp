@@ -7,11 +7,13 @@
 #include <sys/epoll.h>
 #include <cstring>
 #include <iostream>
+#include <basic_file_sink.h>
 
-UdpClient::UdpClient(const ClientSettings& settings)
-    : settings_(settings) {
-    logger = spdlog::get("clientLogger");
-    if (!logger) {
+UdpClient::UdpClient(const ClientSettings& clientSettings)
+    : clientSettings(clientSettings) {
+    initLogging();
+    clientLogger = spdlog::get("clientLogger");
+    if (!clientLogger) {
         throw std::logic_error("Global clientLogger is not initialized");
     }
 }
@@ -28,38 +30,57 @@ std::string UdpClient::encode_bcd(const std::string& imsi) {
     return result;
 }
 
+void UdpClient::initLogging() {
+    clientLogger = spdlog::basic_logger_mt("clientLogger", clientSettings.log_file);
+    clientLogger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+    
+    if (clientSettings.log_level == "DEBUG") {
+        clientLogger->set_level(spdlog::level::debug);
+    } else if (clientSettings.log_level == "INFO") {
+        clientLogger->set_level(spdlog::level::info);
+    } else if (clientSettings.log_level == "WARN") {
+        clientLogger->set_level(spdlog::level::warn);
+    } else if (clientSettings.log_level == "ERROR") {
+        clientLogger->set_level(spdlog::level::err);
+    } else {
+        clientLogger->set_level(spdlog::level::info); 
+    }
+    clientLogger->flush_on(spdlog::level::info);
+    clientLogger->info("---------------------------------------");
+    clientLogger->info("ClientLogger initialized. Log file: {}, level: {}", clientSettings.log_file, clientSettings.log_level);
+}
 
 bool UdpClient::send_imsi(const std::string& imsi) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
-        logger->error("Failed to create UDP socket: {}", strerror(errno));
+        clientLogger->error("Failed to create UDP socket: {}", strerror(errno));
         return false;
     }
 
     // Установка сокета в неблокирующий режим
     int flags = fcntl(sockfd, F_GETFL, 0);
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
-        logger->error("Failed to set socket to non-blocking: {}", strerror(errno));
+        clientLogger->error("Failed to set socket to non-blocking: {}", strerror(errno));
         close(sockfd);
         return false;
     }
 
     sockaddr_in server_addr{};
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(settings_.server_port);
-    if (inet_pton(AF_INET, settings_.server_ip.c_str(), &server_addr.sin_addr) <= 0) {
-        logger->error("Invalid server IP address: {}", settings_.server_ip);
+    server_addr.sin_port = htons(clientSettings.server_port);
+    if (inet_pton(AF_INET, clientSettings.server_ip.c_str(), &server_addr.sin_addr) <= 0) {
+        clientLogger->error("Invalid server IP address: {}", clientSettings.server_ip);
         close(sockfd);
         return false;
     }
 
     std::string bcd = encode_bcd(imsi);
-    logger->info("Sending IMSI: {}", imsi);
+    clientLogger->info("Sending IMSI: {}", imsi);
 
     ssize_t sent = sendto(sockfd, bcd.c_str(), bcd.size(), 0,
                           (sockaddr*)&server_addr, sizeof(server_addr));
     if (sent <= 0) {
-        logger->error("Failed to send UDP packet: {}", strerror(errno));
+        clientLogger->error("Failed to send UDP packet: {}", strerror(errno));
         close(sockfd);
         return false;
     }
@@ -67,7 +88,7 @@ bool UdpClient::send_imsi(const std::string& imsi) {
     // Настройка epoll
     int epoll_fd = epoll_create1(0);
     if (epoll_fd < 0) {
-        logger->error("epoll_create1 failed: {}", strerror(errno));
+        clientLogger->error("epoll_create1 failed: {}", strerror(errno));
         close(sockfd);
         return false;
     }
@@ -77,7 +98,7 @@ bool UdpClient::send_imsi(const std::string& imsi) {
     ev.data.fd = sockfd;
 
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sockfd, &ev) < 0) {
-        logger->error("epoll_ctl failed: {}", strerror(errno));
+        clientLogger->error("epoll_ctl failed: {}", strerror(errno));
         close(epoll_fd);
         close(sockfd);
         return false;
@@ -88,12 +109,12 @@ bool UdpClient::send_imsi(const std::string& imsi) {
     int nfds = epoll_wait(epoll_fd, events, 1, 2000); // timeout 2000ms
 
     if (nfds == 0) {
-        logger->error("Timeout: no response received from server");
+        clientLogger->error("Timeout: no response received from server");
         close(epoll_fd);
         close(sockfd);
         return false;
     } else if (nfds < 0) {
-        logger->error("epoll_wait failed: {}", strerror(errno));
+        clientLogger->error("epoll_wait failed: {}", strerror(errno));
         close(epoll_fd);
         close(sockfd);
         return false;
@@ -106,7 +127,7 @@ bool UdpClient::send_imsi(const std::string& imsi) {
                                 (sockaddr*)&from_addr, &from_len);
 
     if (received <= 0) {
-        logger->error("Failed to receive response: {}", strerror(errno));
+        clientLogger->error("Failed to receive response: {}", strerror(errno));
         close(epoll_fd);
         close(sockfd);
         return false;
@@ -114,7 +135,7 @@ bool UdpClient::send_imsi(const std::string& imsi) {
 
     buffer[received] = '\0';
     std::string response(buffer);
-    logger->info("Received response: {}", response);
+    clientLogger->info("Received response: {}", response);
 
     close(epoll_fd);
     close(sockfd);

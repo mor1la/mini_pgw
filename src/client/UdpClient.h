@@ -1,10 +1,9 @@
-#pragma once
+#ifndef UDPCLIENT_H
+#define UDPCLIENT_H
 
 #include <string>
 #include "./SettingsStructures/ClientSettings.h"
 #include <spdlog/spdlog.h>
-
-class Logger;
 
 class UdpClient {
 public:
@@ -14,6 +13,9 @@ public:
 private:
     std::string encode_bcd(const std::string& imsi);
 
-    const ClientSettings& settings_;
-    std::shared_ptr<spdlog::logger> logger;
+    const ClientSettings& clientSettings;
+    std::shared_ptr<spdlog::logger> clientLogger;
+    void initLogging();
 };
+
+#endif
