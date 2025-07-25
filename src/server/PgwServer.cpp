@@ -8,7 +8,6 @@ PgwServer::PgwServer() {
 }
 
 PgwServer::~PgwServer() {
-    serverLogger->info("DESTRUCTOR");
     if (running || cleanupRunning) {
         stop();
     }
@@ -17,9 +16,6 @@ PgwServer::~PgwServer() {
     httpServer.reset();
     sessionManager.reset();
     cdrWriter.reset();
-
-    serverLogger->info("DESTRUCTOR");
-    //spdlog::drop("serverLogger"); 
 }
 
 
