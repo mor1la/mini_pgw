@@ -33,7 +33,6 @@ private:
     SessionManager& sessionManager;
     CdrWriter& cdrWriter;
     std::shared_ptr<spdlog::logger> serverLogger;
-    std::unique_ptr<std::thread> thread;
     int socket_fd{-1};
     int epoll_fd{-1};
     std::atomic<bool> isRunning{false};

@@ -14,8 +14,7 @@ void UdpServer::start() {
         return;
     }
     isRunning = true;
-    thread = std::make_unique<std::thread>(&UdpServer::run, this);
-    
+    run(); 
 }
 
 
@@ -23,9 +22,6 @@ void UdpServer::stop() {
     isRunning = false;
     if (epoll_fd != -1) close(epoll_fd);
     if (socket_fd != -1) close(socket_fd);
-    if (thread && thread->joinable()) {
-        thread->join();
-    }
 }
 
 void UdpServer::run() {
