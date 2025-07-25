@@ -62,7 +62,7 @@ void PgwServer::loadConfiguration() {
 
     cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
     udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager, *cdrWriter);
-    httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager);
+    httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager, *cdrWriter);
 }
 
 
@@ -106,11 +106,22 @@ void PgwServer::stop() {
 
     serverLogger->info("ALO");
 
+    serverLogger->info("Stopping UDP server...");
     udpServer->stop();
-    httpServer->stop();
+    if (udpThread && udpThread->joinable()) {
+        serverLogger->info("Waiting for UDP thread...");
+        udpThread->join();
+        serverLogger->info("UDP thread finished.");
+    }
 
-    if (udpThread && udpThread->joinable()) udpThread->join();
-    if (httpThread && httpThread->joinable()) httpThread->join();
+    serverLogger->info("Stopping HTTP server...");
+    httpServer->stop();
+    if (httpThread && httpThread->joinable()) {
+        serverLogger->info("Waiting for HTTP thread...");
+        httpThread->join();
+        serverLogger->info("HTTP thread finished.");
+    }
+    
     if (cleanupThread && cleanupThread->joinable()) cleanupThread->join();
 
     serverLogger->info("PGW Server stopped.");

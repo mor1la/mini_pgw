@@ -3,8 +3,8 @@
 #include <thread>
 #include <sstream>
 
-HttpServer::HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager)
-    : settings(std::move(settings)), sessionManager(sessionManager) {
+HttpServer::HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager, CdrWriter &cdrWriter)
+    : settings(std::move(settings)), sessionManager(sessionManager), cdrWriter(cdrWriter) {
         serverLogger = spdlog::get("serverLogger");
         if (!serverLogger) {
             throw std::logic_error("Global serverLogger is not initialized");
@@ -54,6 +54,8 @@ void HttpServer::stop() {
 }
 
 void HttpServer::gracefulOffload() {
+    extern std::atomic<bool> terminateRequested;
+
     serverLogger->info("Graceful offload started...");
 
     constexpr std::chrono::milliseconds offloadDelay(200);
@@ -67,13 +69,14 @@ void HttpServer::gracefulOffload() {
     for (const auto& imsi : imsiList) {
         sessionManager.removeSession(imsi);
 
-        // Запись CDR, если есть доступ к cdrWriter:
-        // cdrWriter->write(imsi, CdrWriter::Action::Delete);
+        cdrWriter.write(imsi, CdrWriter::Action::Offload);
 
         serverLogger->info("Gracefully removed session for IMSI {}", imsi);
         std::this_thread::sleep_for(offloadDelay);
     }
 
     serverLogger->info("Graceful offload completed. {} session(s) removed.", imsiList.size());
+    terminateRequested = true;
+
 }
 
