@@ -12,6 +12,7 @@ public:
     void start();
     void stop();
 
+    void setStopCallback(std::function<void()> cb);
 private:
     crow::SimpleApp app;
     HttpApiServerSettings settings;
@@ -21,6 +22,8 @@ private:
     std::thread serverThread;
 
     std::shared_ptr<spdlog::logger> serverLogger;
+
+    std::function<void()> stopCallback;
 
     void gracefulOffload();
 };

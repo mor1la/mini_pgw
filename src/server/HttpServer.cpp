@@ -38,7 +38,7 @@ void HttpServer::start() {
     });
 
     serverThread = std::thread([this]() {
-        app.port(settings.port).multithreaded().run();
+        app.port(settings.port).multithreaded().concurrency(4).run();
     });
 }
 
@@ -46,7 +46,7 @@ void HttpServer::stop() {
     if (!running) return;
     running = false;
 
-    app.stop(); // Crow метод для остановки сервера
+    app.stop(); 
 
     if (serverThread.joinable()) {
         serverThread.join();
@@ -54,7 +54,6 @@ void HttpServer::stop() {
 }
 
 void HttpServer::gracefulOffload() {
-    extern std::atomic<bool> terminateRequested;
 
     serverLogger->info("Graceful offload started...");
 
@@ -71,8 +70,14 @@ void HttpServer::gracefulOffload() {
         std::this_thread::sleep_for(offloadDelay);
     }
 
+    if (stopCallback) {
+        stopCallback();  
+    }
+
     serverLogger->info("Graceful offload completed. {} session(s) removed.", imsiList.size());
-    terminateRequested = true;
 }
 
 
+void HttpServer::setStopCallback(std::function<void()> cb) {
+    stopCallback = std::move(cb);
+}

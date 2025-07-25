@@ -37,6 +37,11 @@ private:
     std::atomic<bool> cleanupRunning{false};
 
     std::shared_ptr<spdlog::logger> serverLogger;
+
+    std::atomic<bool> terminateRequested{false};
+
+    void registerSignalHandlers();
+    static void handleSignal(int signal);
 };
 
 #endif 
