@@ -1,7 +1,7 @@
 #include "SessionManager.h"
 
-SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist)
-    : timeoutSeconds(timeoutSeconds), blacklist(std::move(blacklist)) {
+SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter &cdrWriter)
+    : timeoutSeconds(timeoutSeconds), blacklist(std::move(blacklist)), cdrWriter(cdrWriter) {
     serverLogger = spdlog::get("serverLogger");
     if (!serverLogger) {
         throw std::logic_error("Global serverLogger is not initialized");
@@ -9,7 +9,11 @@ SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::strin
 }
 
 bool SessionManager::isBlacklisted(const std::string &imsi) const {
-    return blacklist.find(imsi) != blacklist.end();
+    if (blacklist.find(imsi) != blacklist.end()) {
+        cdrWriter.write(imsi, CdrWriter::Action::Reject);
+        return true;
+    }
+    return false;
 }
 
 bool SessionManager::initSession(const std::string &imsi) {
@@ -22,10 +26,12 @@ bool SessionManager::initSession(const std::string &imsi) {
     auto it = sessions.find(imsi);
     if (it != sessions.end()) {
         it->second = std::chrono::steady_clock::now();
+        cdrWriter.write(imsi, CdrWriter::Action::Update);
         serverLogger->debug("Session updated for IMSI {}", imsi);
         return true;
     } else {
         sessions[imsi] = std::chrono::steady_clock::now();
+        cdrWriter.write(imsi, CdrWriter::Action::Create);
         serverLogger->debug("Session created for IMSI {}", imsi);
         return true;
     }
@@ -40,6 +46,7 @@ bool SessionManager::hasSession(const std::string &imsi) const {
 void SessionManager::removeSession(const std::string &imsi) {
     std::lock_guard<std::mutex> lock(sessionMutex);
     sessions.erase(imsi);
+    cdrWriter.write(imsi, CdrWriter::Action::Delete);
     serverLogger->debug("Session removed for IMSI {}", imsi);
 }
 
@@ -55,7 +62,7 @@ std::vector<std::string> SessionManager::cleanupExpiredSessions() {
             std::string imsi = it->first;
             removedImsis.push_back(imsi);
             it = sessions.erase(it);
-
+            cdrWriter.write(imsi, CdrWriter::Action::Delete);
             serverLogger->info("Session for IMSI {} expired and was removed after {} seconds", imsi, elapsed);
         } else {
             ++it;
@@ -71,4 +78,12 @@ std::vector<std::string> SessionManager::cleanupExpiredSessions() {
 std::unordered_map<std::string, std::chrono::steady_clock::time_point> SessionManager::getAllSessions() const {
     std::lock_guard<std::mutex> lock(sessionMutex);
     return sessions;
+}
+
+void SessionManager::offloadSession(const std::string &imsi) {
+    std::lock_guard<std::mutex> lock(sessionMutex);
+    if (sessions.erase(imsi) > 0) {
+        cdrWriter.write(imsi, CdrWriter::Action::Offload);
+        serverLogger->info("Session for IMSI {} was gracefully offloaded", imsi);
+    }
 }

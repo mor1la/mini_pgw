@@ -1,7 +1,7 @@
 #include "UdpServer.h"
 
-UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager, CdrWriter &cdrWriter) :
-    settings(settings), sessionManager(sessionManager), cdrWriter(cdrWriter) {
+UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager) :
+    settings(settings), sessionManager(sessionManager) {
         serverLogger = spdlog::get("serverLogger");
         if (!serverLogger) {
             throw std::logic_error("Global serverLogger is not initialized");
@@ -89,11 +89,9 @@ void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr
     if (!sessionManager.initSession(imsi)) {
         response = "rejected";
         serverLogger->info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
-        cdrWriter.write(imsi, CdrWriter::Action::Reject);
     } else {
         response = "created";
         serverLogger->info("Session created for IMSI {}", imsi);
-        cdrWriter.write(imsi, CdrWriter::Action::Create);
     }
 
     sendto(socket_fd, response.c_str(), response.size(), 0,

@@ -20,7 +20,7 @@
 
 class UdpServer {
 public:
-    UdpServer(const UdpServerSettings settings, SessionManager& sessionManager, CdrWriter& cdrWriter);
+    UdpServer(const UdpServerSettings settings, SessionManager& sessionManager);
     void start();
     void stop();
     
@@ -31,7 +31,6 @@ private:
 
     const UdpServerSettings settings;
     SessionManager& sessionManager;
-    CdrWriter& cdrWriter;
     std::shared_ptr<spdlog::logger> serverLogger;
     int socket_fd{-1};
     int epoll_fd{-1};

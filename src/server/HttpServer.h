@@ -3,11 +3,10 @@
 #include <crow.h>
 #include <atomic>
 #include <thread>
-#include "CdrWriter.h"
 
 class HttpServer {
 public:
-    HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager, CdrWriter &cdrWriter);
+    HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager);
     ~HttpServer();
 
     void start();
@@ -17,7 +16,6 @@ private:
     crow::SimpleApp app;
     HttpApiServerSettings settings;
     SessionManager& sessionManager;
-    CdrWriter& cdrWriter;
 
     std::atomic<bool> running{false};
     std::thread serverThread;

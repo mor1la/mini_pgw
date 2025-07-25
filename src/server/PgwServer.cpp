@@ -55,14 +55,10 @@ void PgwServer::loadConfiguration() {
 
     initLogging(loggerSettings);
 
-    sessionManager = std::make_unique<SessionManager>(
-        sessionSettings.timeoutSeconds,
-        sessionSettings.blacklist
-    );
-
     cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
-    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager, *cdrWriter);
-    httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager, *cdrWriter);
+    sessionManager = std::make_unique<SessionManager>(sessionSettings.timeoutSeconds, sessionSettings.blacklist, *cdrWriter);
+    udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
+    httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager);
 }
 
 
@@ -104,8 +100,6 @@ void PgwServer::stop() {
     running = false;
     cleanupRunning = false;
 
-    serverLogger->info("ALO");
-
     serverLogger->info("Stopping UDP server...");
     udpServer->stop();
     if (udpThread && udpThread->joinable()) {
@@ -121,7 +115,7 @@ void PgwServer::stop() {
         httpThread->join();
         serverLogger->info("HTTP thread finished.");
     }
-    
+
     if (cleanupThread && cleanupThread->joinable()) cleanupThread->join();
 
     serverLogger->info("PGW Server stopped.");
