@@ -5,11 +5,8 @@ project(pgw_project)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ===================== DEPENDENCIES =====================
-
 include(FetchContent)
 
-# spdlog
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -17,15 +14,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
-# crow
 FetchContent_Declare(
     crow
     GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
     GIT_TAG v1.0+5
 )
 FetchContent_MakeAvailable(crow)
-
-# ===================== COMMON SOURCES =====================
 
 file(GLOB_RECURSE COMMON_SOURCES
     src/common/*.cpp
@@ -35,8 +29,6 @@ file(GLOB_RECURSE COMMON_HEADERS
     src/common/*.h
     src/common/*.hpp
 )
-
-# ===================== SERVER TARGET =====================
 
 file(GLOB_RECURSE SERVER_SOURCES
     src/server/*.cpp
@@ -61,8 +53,6 @@ target_include_directories(pgw_server PRIVATE
 set_target_properties(pgw_server PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
-
-# ===================== CLIENT TARGET =====================
 
 file(GLOB_RECURSE CLIENT_SOURCES
     src/client/*.cpp

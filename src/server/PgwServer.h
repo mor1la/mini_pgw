@@ -1,16 +1,15 @@
 #ifndef PGWSERVER_H
 #define PGWSERVER_H
 
-#include <memory>
-#include <thread>
+#include "StructSplitter.h"
 #include "UdpServer.h"
 #include "SessionManager.h"
 #include "CdrWriter.h"
-#include "./ConfigLoader/ServerConfigLoader.h"
-#include "StructSplitter.h"
-
-class HttpServer;
-
+#include "HttpServer.h" 
+#include "./ConfigLoader/ServerConfigLoader.h" 
+#include <memory>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 class PgwServer {
 public:
@@ -35,10 +34,9 @@ private:
 
     std::atomic<bool> running{false};
     std::atomic<bool> cleanupRunning{false};
+    std::atomic<bool> terminateRequested{false};
 
     std::shared_ptr<spdlog::logger> serverLogger;
-
-    std::atomic<bool> terminateRequested{false};
 
     void registerSignalHandlers();
     static void handleSignal(int signal);

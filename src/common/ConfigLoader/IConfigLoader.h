@@ -1,6 +1,10 @@
 #ifndef ICONFIGLOADER_H
 #define ICONFIGLOADER_H
 #include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <stdexcept>
+
 
 
 template<typename SettingsT>

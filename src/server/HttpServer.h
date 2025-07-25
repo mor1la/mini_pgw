@@ -1,8 +1,13 @@
+#ifndef HTTPSERVER_H
+#define HTTPSERVER_H
+
 #include "SessionManager.h"
 #include "./SettingsStructures/HttpApiServerSettings.h"
 #include <crow.h>
 #include <atomic>
 #include <thread>
+#include <chrono>
+#include <sstream>
 
 class HttpServer {
 public:
@@ -14,16 +19,15 @@ public:
 
     void setStopCallback(std::function<void()> cb);
 private:
+    void gracefulOffload();
+
     crow::SimpleApp app;
     HttpApiServerSettings settings;
     SessionManager& sessionManager;
-
     std::atomic<bool> running{false};
     std::thread serverThread;
-
     std::shared_ptr<spdlog::logger> serverLogger;
-
     std::function<void()> stopCallback;
-
-    void gracefulOffload();
 };
+
+#endif

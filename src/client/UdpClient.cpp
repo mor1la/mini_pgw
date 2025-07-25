@@ -1,13 +1,5 @@
 #include "UdpClient.h"
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/epoll.h>
-#include <cstring>
-#include <iostream>
-
 UdpClient::UdpClient()
     : clientSettings(clientSettings) {
     loadConfiguration();
@@ -21,9 +13,9 @@ std::string UdpClient::encode_bcd(const std::string& imsi) {
     std::string result;
     for (size_t i = 0; i < imsi.length(); i += 2) {
         uint8_t digit1 = imsi[i] - '0';
-        uint8_t digit2 = (i + 1 < imsi.length()) ? (imsi[i + 1] - '0') : 0x0F; // Padding
+        uint8_t digit2 = (i + 1 < imsi.length()) ? (imsi[i + 1] - '0') : 0x0F; 
 
-        uint8_t byte = (digit2 << 4) | digit1;  // digit1 = младший, digit2 = старший
+        uint8_t byte = (digit2 << 4) | digit1;  
         result.push_back(byte);
     }
     return result;
@@ -56,7 +48,6 @@ bool UdpClient::send_imsi(const std::string& imsi) {
         return false;
     }
 
-    // Установка сокета в неблокирующий режим
     int flags = fcntl(sockfd, F_GETFL, 0);
     if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
         clientLogger->error("Failed to set socket to non-blocking: {}", strerror(errno));
@@ -84,7 +75,6 @@ bool UdpClient::send_imsi(const std::string& imsi) {
         return false;
     }
 
-    // Настройка epoll
     int epoll_fd = epoll_create1(0);
     if (epoll_fd < 0) {
         clientLogger->error("epoll_create1 failed: {}", strerror(errno));
@@ -103,9 +93,8 @@ bool UdpClient::send_imsi(const std::string& imsi) {
         return false;
     }
 
-    // Ожидание ответа от сервера
     epoll_event events[1];
-    int nfds = epoll_wait(epoll_fd, events, 1, 2000); // timeout 2000ms
+    int nfds = epoll_wait(epoll_fd, events, 1, 2000); 
 
     if (nfds == 0) {
         clientLogger->error("Timeout: no response received from server");

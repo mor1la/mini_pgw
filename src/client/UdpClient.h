@@ -1,12 +1,17 @@
 #ifndef UDPCLIENT_H
 #define UDPCLIENT_H
 
-#include <string>
 #include "./SettingsStructures/ClientSettings.h"
 #include "./ConfigLoader/ClientConfigLoader.h"
 #include "StructSplitter.h"
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/epoll.h>
+#include <string>
 
 class UdpClient {
 public:
@@ -15,11 +20,11 @@ public:
 
 private:
     std::string encode_bcd(const std::string& imsi);
+    void initLogging();
+    void loadConfiguration();
 
     ClientSettings clientSettings;
     std::shared_ptr<spdlog::logger> clientLogger;
-    void initLogging();
-    void loadConfiguration();
 };
 
 #endif

@@ -9,7 +9,6 @@ int main(int argc, char* argv[]) {
 
     std::string imsi = argv[1];
 
-    // Проверка, что IMSI содержит только цифры
     if (imsi.empty() || imsi.find_first_not_of("0123456789") != std::string::npos) {
         std::cerr << "Error: IMSI must contain only digits.\n";
         return 1;

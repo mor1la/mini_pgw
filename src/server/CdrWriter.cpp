@@ -1,7 +1,4 @@
 #include "CdrWriter.h"
-#include <chrono>
-#include <iomanip>
-#include <sstream>
 
 CdrWriter::CdrWriter(const std::string& filename) {
     cdrFile.open(filename, std::ios::app);
@@ -26,7 +23,7 @@ void CdrWriter::write(const std::string& imsi, Action action) {
     std::string timestamp = getTimestamp();
     cdrFile << timestamp << "," << imsi << "," << actionToString(action) << std::endl;
 
-    //logger->info("CDR entry written: {}, {}, {}", timestamp, imsi, action);
+    serverLogger->info("CDR entry written: {}, {}, {}", timestamp, imsi, action);
 }
 
 std::string CdrWriter::getTimestamp() {

@@ -1,19 +1,15 @@
 #ifndef UDPSERVER_H
 #define UDPSERVER_H
-#include <thread>
-#include <memory>
-#include <spdlog/spdlog.h>
+
+#include "CdrWriter.h"
+#include "./Consts/ResponseConsts.h"
+#include "./SettingsStructures/UdpServerSettings.h"
+#include "SessionManager.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h>
 #include <sys/epoll.h>
 #include <arpa/inet.h>
 #include <atomic>
-#include "./SettingsStructures/UdpServerSettings.h"
-#include "SessionManager.h"
-#include "./Consts/ResponseConsts.h"
-#include <iostream>
-#include "CdrWriter.h"
 #include <fcntl.h>     
 #include <unistd.h>    
 
