@@ -90,9 +90,12 @@ enable_testing()
 add_executable(
     unit_tests
     src/tests/SessionManagerTest.cpp
+    src/tests/ConfigLoaderTest.cpp
     src/tests/mocks/MockCdrWriter.h
     src/server/SessionManager.cpp 
     src/server/CdrWriter.cpp 
+    src/common/ConfigLoader/ServerConfigLoader.cpp
+    src/common/ConfigLoader/ClientConfigLoader.cpp
     src/common
     src/server
     src/client
@@ -105,9 +108,10 @@ target_link_libraries(unit_tests
 
 target_include_directories(unit_tests PRIVATE
     ${crow_SOURCE_DIR}/include
-    ${spdlog_SOURCE_DIR}/include       
+    ${spdlog_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/tests
+    ${CMAKE_SOURCE_DIR}/src/common
+    ${CMAKE_SOURCE_DIR}/src/tests
 )
 
 

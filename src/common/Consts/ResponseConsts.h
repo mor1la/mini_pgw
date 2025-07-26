@@ -8,6 +8,4 @@ namespace Response {
 }
 
 
-
-
 #endif

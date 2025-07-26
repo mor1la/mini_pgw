@@ -6,7 +6,6 @@
 #include <stdexcept>
 
 
-
 template<typename SettingsT>
 class IConfigLoader {
 public:

@@ -6,6 +6,7 @@
 #include "SessionManager.h"
 #include "CdrWriter.h"
 #include "HttpServer.h" 
+#include "./Consts/PathConsts.h"
 #include "./ConfigLoader/ServerConfigLoader.h" 
 #include <memory>
 #include <spdlog/spdlog.h>

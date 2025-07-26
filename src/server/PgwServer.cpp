@@ -38,7 +38,7 @@ void PgwServer::initLogging(LoggerSettings loggerSettings) {
 
 void PgwServer::loadConfiguration() {
     ServerConfigLoader loader;
-    auto raw = loader.loadFromFile("../../config/server_config.json");
+    auto raw = loader.loadFromFile(Path::serverConfig);
 
     StructSplitter splitter;
     auto udpSettings = splitter.makeUdpSettings(raw);

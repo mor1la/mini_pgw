@@ -132,7 +132,7 @@ bool UdpClient::send_imsi(const std::string& imsi) {
 
 void UdpClient::loadConfiguration() {
     ClientConfigLoader loader;
-    clientSettings = loader.loadFromFile("../../config/client_config.json");
+    clientSettings = loader.loadFromFile(Path::clientConfig);
 
     initLogging();
 }
