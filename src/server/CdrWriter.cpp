@@ -1,13 +1,15 @@
 #include "CdrWriter.h"
+#include <spdlog/sinks/null_sink.h>
 
-CdrWriter::CdrWriter(const std::string& filename) {
+CdrWriter::CdrWriter(const std::string& filename, std::shared_ptr<spdlog::logger> serverLogger) : serverLogger(serverLogger ? serverLogger : spdlog::get("serverLogger")){
     cdrFile.open(filename, std::ios::app);
     if (!cdrFile.is_open()) {
         throw std::runtime_error("Failed to open CDR file: " + filename);
     }
-    serverLogger = spdlog::get("serverLogger");
+
     if (!serverLogger) {
-        throw std::logic_error("Global serverLogger is not initialized");
+        auto null_sink = std::make_shared<spdlog::sinks::null_sink_mt>();
+        serverLogger = std::make_shared<spdlog::logger>("null_logger", null_sink);
     }
 }
 
@@ -23,7 +25,7 @@ void CdrWriter::write(const std::string& imsi, Action action) {
     std::string timestamp = getTimestamp();
     cdrFile << timestamp << "," << imsi << "," << actionToString(action) << std::endl;
 
-    serverLogger->info("CDR entry written: {}, {}, {}", timestamp, imsi, action);
+    serverLogger->info("CDR entry written: {}, {}, {}", timestamp, imsi, actionToString(action));
 }
 
 std::string CdrWriter::getTimestamp() {

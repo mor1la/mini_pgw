@@ -10,7 +10,7 @@
 
 class SessionManager {
 public:
-    SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter& cdrWriter);
+    SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
 
     bool initSession(const std::string &imsi);
     bool isBlacklisted(const std::string &imsi) const;

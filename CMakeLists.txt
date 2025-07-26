@@ -21,6 +21,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(crow)
 
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/heads/main.zip
+)
+
+FetchContent_MakeAvailable(googletest)
+
 file(GLOB_RECURSE COMMON_SOURCES
     src/common/*.cpp
 )
@@ -77,3 +84,31 @@ target_include_directories(pgw_client PRIVATE
 set_target_properties(pgw_client PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
+
+enable_testing()
+
+add_executable(
+    unit_tests
+    src/tests/SessionManagerTest.cpp
+    src/tests/mocks/MockCdrWriter.h
+    src/server/SessionManager.cpp 
+    src/server/CdrWriter.cpp 
+    src/common
+    src/server
+    src/client
+)
+
+target_link_libraries(unit_tests
+    gtest gmock gtest_main
+    pthread
+)
+
+target_include_directories(unit_tests PRIVATE
+    ${crow_SOURCE_DIR}/include
+    ${spdlog_SOURCE_DIR}/include       
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/tests
+)
+
+
+add_test(NAME AllTests COMMAND unit_tests)

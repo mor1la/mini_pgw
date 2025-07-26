@@ -20,11 +20,11 @@ public:
         Update
     };
 
-    CdrWriter(const std::string& filename);
+    CdrWriter(const std::string& filename, std::shared_ptr<spdlog::logger> logger = nullptr);
     ~CdrWriter();
 
     
-    void write(const std::string& imsi, Action action);
+    virtual void write(const std::string& imsi, Action action);
 
 private:
     std::ofstream cdrFile;

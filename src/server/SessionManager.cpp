@@ -1,10 +1,13 @@
 #include "SessionManager.h"
+#include <spdlog/sinks/null_sink.h>
 
-SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter &cdrWriter)
-    : timeoutSeconds(timeoutSeconds), blacklist(std::move(blacklist)), cdrWriter(cdrWriter) {
-    serverLogger = spdlog::get("serverLogger");
+SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter &cdrWriter, std::shared_ptr<spdlog::logger> serverLogger)
+    : timeoutSeconds(timeoutSeconds), blacklist(std::move(blacklist)), cdrWriter(cdrWriter),
+      serverLogger(serverLogger ? serverLogger : spdlog::get("serverLogger")) {
+
     if (!serverLogger) {
-        throw std::logic_error("Global serverLogger is not initialized");
+        auto null_sink = std::make_shared<spdlog::sinks::null_sink_mt>();
+        serverLogger = std::make_shared<spdlog::logger>("null_logger", null_sink);
     }
 }
 
