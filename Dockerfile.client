@@ -1,0 +1,14 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+    apt-get install -y cmake g++ git libboost-all-dev libssl-dev wget unzip 
+
+WORKDIR /app
+COPY ./src/client /app/client 
+COPY ./src/common /app/common
+COPY ./config/client_config.json /app/client/
+
+WORKDIR /app/client
+RUN cmake -Bbuild -H. && cmake --build build --target pgw_client
+
+CMD ["./build/bin/pgw_client"]

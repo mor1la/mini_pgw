@@ -91,11 +91,13 @@ add_executable(
     unit_tests
     src/tests/SessionManagerTest.cpp
     src/tests/ConfigLoaderTest.cpp
+    src/tests/UdpClientTest.cpp
     src/tests/mocks/MockCdrWriter.h
     src/server/SessionManager.cpp 
     src/server/CdrWriter.cpp 
     src/common/ConfigLoader/ServerConfigLoader.cpp
     src/common/ConfigLoader/ClientConfigLoader.cpp
+    src/client/UdpClient.cpp
     src/common
     src/server
     src/client

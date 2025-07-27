@@ -12,13 +12,22 @@ UdpClient::UdpClient()
 std::string UdpClient::encode_bcd(const std::string& imsi) {
     std::string result;
     for (size_t i = 0; i < imsi.length(); i += 2) {
-        uint8_t digit1 = imsi[i] - '0';
-        uint8_t digit2 = (i + 1 < imsi.length()) ? (imsi[i + 1] - '0') : 0x0F; 
+        if (!isdigit(imsi[i]) || (i + 1 < imsi.length() && !isdigit(imsi[i + 1]))) {
+            throw std::invalid_argument("IMSI contains non-digit characters");
+        }
 
-        uint8_t byte = (digit2 << 4) | digit1;  
+        uint8_t digit1 = imsi[i] - '0';
+        uint8_t digit2 = (i + 1 < imsi.length()) ? (imsi[i + 1] - '0') : 0x0F;
+
+        uint8_t byte = (digit2 << 4) | digit1;
         result.push_back(byte);
     }
     return result;
+}
+
+
+ClientSettings UdpClient::getClientSettings() {
+    return ClientSettings();
 }
 
 void UdpClient::initLogging() {

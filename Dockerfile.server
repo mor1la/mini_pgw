@@ -1,0 +1,17 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+    apt-get install -y cmake g++ git libboost-all-dev libssl-dev wget unzip 
+
+WORKDIR /app
+COPY ./src/server /app/server 
+COPY ./src/common /app/common
+COPY ./config/server_config.json /app/server/
+
+
+WORKDIR /app/server
+RUN cmake -Bbuild -H. && cmake --build build --target pgw_server
+
+EXPOSE 18080
+
+CMD ["./build/bin/pgw_server"]
