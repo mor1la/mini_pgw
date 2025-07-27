@@ -1,17 +1,19 @@
 #ifndef SESSIONMANAGER_H
 #define SESSIONMANAGER_H
 
+#include "CdrWriter.h"
+#include "./SettingsStructures/SessionManagerSettings.h"
+
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 #include <chrono>
 #include <spdlog/spdlog.h>
-#include "CdrWriter.h"
 
 class SessionManager {
 public:
-    SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
-
+    //SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
+    SessionManager(const SessionManagerSettings settings, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
     bool initSession(const std::string &imsi);
     bool isBlacklisted(const std::string &imsi) const;
 
@@ -24,8 +26,7 @@ public:
     void offloadSession(const std::string &imsi);
 
 private:
-    int timeoutSeconds;
-    std::unordered_set<std::string> blacklist;
+    const SessionManagerSettings settings;
     mutable std::mutex sessionMutex;
     std::unordered_map<std::string, std::chrono::steady_clock::time_point> sessions;
     CdrWriter& cdrWriter;

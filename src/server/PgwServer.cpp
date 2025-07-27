@@ -49,7 +49,7 @@ void PgwServer::loadConfiguration() {
     initLogging(loggerSettings);
 
     cdrWriter = std::make_unique<CdrWriter>(sessionSettings.cdrFilePath);
-    sessionManager = std::make_unique<SessionManager>(sessionSettings.timeoutSeconds, sessionSettings.blacklist, *cdrWriter);
+    sessionManager = std::make_unique<SessionManager>(sessionSettings, *cdrWriter);
     udpServer = std::make_unique<UdpServer>(udpSettings, *sessionManager);
     httpServer = std::make_unique<HttpServer>(httpSettings, *sessionManager);
 

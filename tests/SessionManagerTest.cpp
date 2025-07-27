@@ -11,23 +11,19 @@ class SessionManagerTest : public ::testing::Test {
 protected:
     SessionManagerTest() 
         : mockCdrWriter(std::make_shared<MockCdrWriter>()),
-          blacklist({"123456789012345"}),
-          timeoutSeconds(1) {
-        
-
+          settings{1, {"123456789012345"}} // timeoutSeconds = 1, blacklist содержит 1 элемент
+    {
         auto null_sink = std::make_shared<spdlog::sinks::null_sink_mt>();
         testLogger = std::make_shared<spdlog::logger>("test_logger", null_sink);
-        
+
         sessionManager = std::make_unique<SessionManager>(
-            timeoutSeconds, 
-            blacklist, 
+            settings,
             *mockCdrWriter,
-            testLogger  
+            testLogger
         );
     }
 
-    int timeoutSeconds;
-    std::unordered_set<std::string> blacklist;
+    SessionManagerSettings settings;
     std::shared_ptr<MockCdrWriter> mockCdrWriter;
     std::shared_ptr<spdlog::logger> testLogger;
     std::unique_ptr<SessionManager> sessionManager;
@@ -94,7 +90,7 @@ TEST_F(SessionManagerTest, CleanupExpiredSessionsRemovesTimedOutSessions) {
     sessionManager->initSession(imsi2);
     
     // Ждем, пока сессии истекут
-    std::this_thread::sleep_for(std::chrono::seconds(timeoutSeconds + 1));
+    std::this_thread::sleep_for(std::chrono::seconds(settings.timeoutSeconds + 1));
     
     // Ожидаем записи в CDR о удалении
     EXPECT_CALL(*mockCdrWriter, write(imsi1, CdrWriter::Action::Delete)).Times(1);
