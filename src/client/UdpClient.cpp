@@ -25,7 +25,6 @@ std::string UdpClient::encodeBcd(const std::string &imsi) {
     return result;
 }
 
-
 ClientSettings UdpClient::getClientSettings() {
     return ClientSettings();
 }
@@ -49,7 +48,6 @@ void UdpClient::initLogging() {
     clientLogger->info("---------------------------------------");
     clientLogger->info("ClientLogger initialized. Log file: {}, level: {}", clientSettings.logFile, clientSettings.logLevel);
 }
-
 
 bool UdpClient::sendImsi(const std::string &imsi) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
