@@ -87,10 +87,10 @@ void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr
 
     std::string response;
     if (!sessionManager.initSession(imsi)) {
-        response = "rejected";
+        response = Response::failure;
         serverLogger->info("IMSI {} rejected from {}", imsi, inet_ntoa(client_addr.sin_addr));
     } else {
-        response = "created";
+        response = Response::success;
         serverLogger->info("Session created for IMSI {}", imsi);
     }
 
