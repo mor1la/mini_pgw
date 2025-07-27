@@ -38,7 +38,8 @@ void HttpServer::start() {
     });
 
     serverThread = std::thread([this]() {
-        app.port(settings.port).multithreaded().concurrency(4).run();
+        app.port(settings.port).multithreaded().concurrency(4).signal_clear().run_async();
+        app.wait_for_server_start(); 
     });
 }
 
