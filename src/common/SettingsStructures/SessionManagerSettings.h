@@ -5,7 +5,7 @@
 
 
 struct SessionManagerSettings {
-    int timeoutSeconds;
+    unsigned int timeoutSeconds;
     std::unordered_set<std::string> blacklist;
     std::string cdrFilePath;
 };

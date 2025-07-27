@@ -3,7 +3,7 @@
 
 struct HttpApiServerSettings {
     int port;
-    int gracefulShutdownRate;
+    unsigned int gracefulShutdownRate;
 };
 
 #endif

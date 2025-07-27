@@ -34,6 +34,7 @@ void HttpServer::start() {
     CROW_ROUTE(app, "/stop")
     ([this]() {
         std::thread(&HttpServer::gracefulOffload, this).detach();
+        serverLogger->info("/stop called");
         return crow::response(200, "Shutting down");
     });
 
@@ -45,7 +46,6 @@ void HttpServer::start() {
 
 void HttpServer::stop() {
     if (!running) {
-        serverLogger->warn("HttpServer::stop called but server is not running");
         return;
     } 
 

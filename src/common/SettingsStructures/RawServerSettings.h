@@ -6,10 +6,10 @@
 struct RawServerSettings {
     std::string udpIp;
     int udpPort;
-    int sessionTimeoutSec;
+    unsigned int sessionTimeoutSec;
     std::string cdrFile;
     int httpPort;
-    int gracefulShutdownRate;
+    unsigned int gracefulShutdownRate;
     std::string logFile;
     std::string logLevel;
     std::unordered_set<std::string> blacklist;
