@@ -31,24 +31,25 @@ ClientSettings UdpClient::getClientSettings() {
 }
 
 void UdpClient::initLogging() {
+    static const std::unordered_map<std::string, spdlog::level::level_enum> logLevelMap = {
+        {"DEBUG", spdlog::level::debug},
+        {"INFO",  spdlog::level::info},
+        {"WARN",  spdlog::level::warn},
+        {"ERROR", spdlog::level::err}
+    };
+
     clientLogger = spdlog::basic_logger_mt("clientLogger", clientSettings.logFile);
     clientLogger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    
-    if (clientSettings.logLevel == "DEBUG") {
-        clientLogger->set_level(spdlog::level::debug);
-    } else if (clientSettings.logLevel == "INFO") {
-        clientLogger->set_level(spdlog::level::info);
-    } else if (clientSettings.logLevel == "WARN") {
-        clientLogger->set_level(spdlog::level::warn);
-    } else if (clientSettings.logLevel == "ERROR") {
-        clientLogger->set_level(spdlog::level::err);
-    } else {
-        clientLogger->set_level(spdlog::level::info); 
-    }
+
+    auto it = logLevelMap.find(clientSettings.logLevel);
+    spdlog::level::level_enum level = (it != logLevelMap.end()) ? it->second : spdlog::level::info;
+    clientLogger->set_level(level);
+
     clientLogger->flush_on(spdlog::level::info);
     clientLogger->info("---------------------------------------");
     clientLogger->info("ClientLogger initialized. Log file: {}, level: {}", clientSettings.logFile, clientSettings.logLevel);
 }
+
 
 bool UdpClient::send_imsi(const std::string& imsi) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
