@@ -19,11 +19,11 @@ public:
     UdpServer(const UdpServerSettings settings, SessionManager &sessionManager);
     void start();
     void stop();
+    static std::string decodeBcd(const std::string &data);
     
 private:
     void run();
     void handleImsi(const std::string &bcd_imsi, sockaddr_in &client_addr);
-    std::string decodeBcd(const std::string &data);
 
     const UdpServerSettings settings;
     SessionManager &sessionManager;

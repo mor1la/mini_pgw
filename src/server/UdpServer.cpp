@@ -99,11 +99,20 @@ void UdpServer::handleImsi(const std::string &bcd_imsi, sockaddr_in &client_addr
 
 std::string UdpServer::decodeBcd(const std::string &data) {
     std::string result;
+
     for (unsigned char byte : data) {
         int low = byte & 0x0F;
-        int high = (byte & 0xF0) >> 4;
-        if (low <= 9) result += std::to_string(low);
-        if (high <= 9) result += std::to_string(high);
+        int high = (byte >> 4) & 0x0F;
+
+        if (low > 9 && low != 0x0F)
+            throw std::invalid_argument("Invalid BCD digit in low nibble");
+
+        if (high > 9 && high != 0x0F)
+            throw std::invalid_argument("Invalid BCD digit in high nibble");
+
+        if (low != 0x0F) result += std::to_string(low);
+        if (high != 0x0F) result += std::to_string(high);
     }
+
     return result;
 }
