@@ -9,7 +9,7 @@ protected:
 // IMSI с чётным количеством цифр
 TEST_F(UdpClientEncodeTest, EncodeBcdCorrectlyEncodesImsiWithEvenDigits) {
     std::string imsi = "123456";
-    std::string encoded = UdpClient::encode_bcd(imsi);
+    std::string encoded = UdpClient::encodeBcd(imsi);
 
     ASSERT_EQ(encoded.size(), 3);
     EXPECT_EQ((uint8_t)encoded[0], 0x21);  // 1 + 2
@@ -20,7 +20,7 @@ TEST_F(UdpClientEncodeTest, EncodeBcdCorrectlyEncodesImsiWithEvenDigits) {
 // IMSI с нечётным количеством цифр (последний байт должен содержать 0xF)
 TEST_F(UdpClientEncodeTest, EncodeBcdCorrectlyEncodesImsiWithOddDigits) {
     std::string imsi = "12345";
-    std::string encoded = UdpClient::encode_bcd(imsi);
+    std::string encoded = UdpClient::encodeBcd(imsi);
 
     ASSERT_EQ(encoded.size(), 3);
     EXPECT_EQ((uint8_t)encoded[0], 0x21);  // 1 + 2
