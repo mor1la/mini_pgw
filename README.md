@@ -112,7 +112,7 @@ make
 - `UdpServer` – корректность декодирования сообщений  
 
 Исполняемый файл с тестами: `build/bin/unit_tests`
-## 6. Инструкция по использованию PGW-сервера и клиента
+## 6. Примеры использования PGW-сервера и клиента
 ### Запуск сервера
 ```bash
 ./pgw_server
@@ -121,7 +121,7 @@ make
 ```bash
 ./pgw_client 001010123456785
 ```
-### Для вызова /check_subscriber
+### Для проверки активности сессии /check_subscriber
 ```bash
 curl "http://localhost:8080/check_subscriber?imsi=001010123456785"
 ```
