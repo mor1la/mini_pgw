@@ -1,7 +1,7 @@
 #include "CdrWriter.h"
 #include <spdlog/sinks/null_sink.h>
 
-CdrWriter::CdrWriter(const std::string& filename, std::shared_ptr<spdlog::logger> serverLogger) : serverLogger(serverLogger ? serverLogger : spdlog::get("serverLogger")){
+CdrWriter::CdrWriter(const std::string &filename, std::shared_ptr<spdlog::logger> serverLogger) : serverLogger(serverLogger ? serverLogger : spdlog::get("serverLogger")){
     cdrFile.open(filename, std::ios::app);
     if (!cdrFile.is_open()) {
         throw std::runtime_error("Failed to open CDR file: " + filename);
@@ -19,7 +19,7 @@ CdrWriter::~CdrWriter() {
     }
 }
 
-void CdrWriter::write(const std::string& imsi, Action action) {
+void CdrWriter::write(const std::string &imsi, Action action) {
     std::lock_guard<std::mutex> lock(writeMutex);
 
     std::string timestamp = getTimestamp();

@@ -15,7 +15,6 @@ PgwServer::~PgwServer() {
     cdrWriter.reset();
 }
 
-
 void PgwServer::initLogging(LoggerSettings loggerSettings) {
     static const std::unordered_map<std::string, spdlog::level::level_enum> logLevelMap = {
         {"DEBUG", spdlog::level::debug},
@@ -35,7 +34,6 @@ void PgwServer::initLogging(LoggerSettings loggerSettings) {
     serverLogger->info("---------------------------------------");
     serverLogger->info("ServerLogger initialized. Log file: {}, level: {}", loggerSettings.logFile, loggerSettings.logLevel);
 }
-
 
 void PgwServer::loadConfiguration() {
     ServerConfigLoader loader;
@@ -57,9 +55,7 @@ void PgwServer::loadConfiguration() {
     httpServer->setStopCallback([this]() {
         this->terminateRequested = true;
     });
-
 }
-
 
 void PgwServer::start() {
     running = true;

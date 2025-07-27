@@ -1,16 +1,6 @@
 #include "SessionManager.h"
 #include <spdlog/sinks/null_sink.h>
 
-// SessionManager::SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter &cdrWriter, std::shared_ptr<spdlog::logger> serverLogger)
-//     : timeoutSeconds(timeoutSeconds), blacklist(std::move(blacklist)), cdrWriter(cdrWriter),
-//       serverLogger(serverLogger ? serverLogger : spdlog::get("serverLogger")) {
-
-//     if (!serverLogger) {
-//         auto null_sink = std::make_shared<spdlog::sinks::null_sink_mt>();
-//         serverLogger = std::make_shared<spdlog::logger>("null_logger", null_sink);
-//     }
-// }
-
 SessionManager::SessionManager(const SessionManagerSettings settings, CdrWriter &cdrWriter, std::shared_ptr<spdlog::logger> logger)
     : settings(settings), cdrWriter(cdrWriter), serverLogger(logger ? logger : spdlog::get("serverLogger")) {
 
@@ -29,8 +19,7 @@ bool SessionManager::isBlacklisted(const std::string &imsi) const {
     return false;
 }
 
-bool SessionManager::initSession(const std::string &imsi)
-{
+bool SessionManager::initSession(const std::string &imsi) {
     if (isBlacklisted(imsi)) {
         return false;
     }

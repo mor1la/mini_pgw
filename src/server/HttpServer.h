@@ -11,7 +11,7 @@
 
 class HttpServer {
 public:
-    HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager);
+    HttpServer(HttpApiServerSettings settings, SessionManager &sessionManager);
     ~HttpServer();
 
     void start();
@@ -24,7 +24,7 @@ private:
 
     crow::SimpleApp app;
     HttpApiServerSettings settings;
-    SessionManager& sessionManager;
+    SessionManager &sessionManager;
     std::atomic<bool> running{false};
     std::thread serverThread;
     std::shared_ptr<spdlog::logger> serverLogger;

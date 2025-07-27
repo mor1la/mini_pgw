@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
             std::cerr << "Failed to send IMSI." << std::endl;
             return 1;
         }
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         std::cerr << "Client error: " << ex.what() << std::endl;
         return 1;
     }

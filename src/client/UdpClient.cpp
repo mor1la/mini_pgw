@@ -9,7 +9,7 @@ UdpClient::UdpClient()
     }
 }
 
-std::string UdpClient::encodeBcd(const std::string& imsi) {
+std::string UdpClient::encodeBcd(const std::string &imsi) {
     std::string result;
     for (size_t i = 0; i < imsi.length(); i += 2) {
         if (!isdigit(imsi[i]) || (i + 1 < imsi.length() && !isdigit(imsi[i + 1]))) {
@@ -51,7 +51,7 @@ void UdpClient::initLogging() {
 }
 
 
-bool UdpClient::sendImsi(const std::string& imsi) {
+bool UdpClient::sendImsi(const std::string &imsi) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         clientLogger->error("Failed to create UDP socket: {}", strerror(errno));

@@ -4,8 +4,6 @@
 #include "../common/ConfigLoader/ClientConfigLoader.h"
 #include "../common/ConfigLoader/ServerConfigLoader.h"
 
-namespace fs = std::filesystem;
-
 class ConfigLoaderTest : public ::testing::Test {
 protected:
     std::string serverConfigPath;
@@ -78,18 +76,18 @@ TEST_F(ConfigLoaderTest, LoadValidClientConfig) {
 
 TEST_F(ConfigLoaderTest, MissingServerConfigFileThrows) {
     ServerConfigLoader loader;
-    std::string badPath = fs::temp_directory_path() / "nonexistent.json";
+    std::string badPath = std::filesystem::temp_directory_path() / "nonexistent.json";
     EXPECT_THROW(loader.loadFromFile(badPath), std::runtime_error);
 }
 
 TEST_F(ConfigLoaderTest, MissingClientConfigFileThrows) {
     ClientConfigLoader loader;
-    std::string badPath = fs::temp_directory_path() / "missing_client.json";
+    std::string badPath = std::filesystem::temp_directory_path() / "missing_client.json";
     EXPECT_THROW(loader.loadFromFile(badPath), std::runtime_error);
 }
 
 TEST_F(ConfigLoaderTest, InvalidServerJsonThrows) {
-    std::string path = fs::temp_directory_path() / "bad_server.json";
+    std::string path = std::filesystem::temp_directory_path() / "bad_server.json";
     std::ofstream out(path);
     out << R"({"udp_ip": "0.0.0.0"})"; // Недостаточно полей
     out.close();
@@ -97,11 +95,11 @@ TEST_F(ConfigLoaderTest, InvalidServerJsonThrows) {
     ServerConfigLoader loader;
     EXPECT_THROW(loader.loadFromFile(path), std::runtime_error);
 
-    fs::remove(path);
+    std::filesystem::remove(path);
 }
 
 TEST_F(ConfigLoaderTest, InvalidClientJsonThrows) {
-    std::string path = fs::temp_directory_path() / "bad_client.json";
+    std::string path = std::filesystem::temp_directory_path() / "bad_client.json";
     std::ofstream out(path);
     out << R"({"server_ip": "127.0.0.1"})"; // Недостаточно полей
     out.close();
@@ -109,5 +107,5 @@ TEST_F(ConfigLoaderTest, InvalidClientJsonThrows) {
     ClientConfigLoader loader;
     EXPECT_THROW(loader.loadFromFile(path), std::runtime_error);
 
-    fs::remove(path);
+    std::filesystem::remove(path);
 }

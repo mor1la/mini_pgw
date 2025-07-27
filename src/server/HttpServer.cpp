@@ -1,6 +1,6 @@
 #include "HttpServer.h"
 
-HttpServer::HttpServer(HttpApiServerSettings settings, SessionManager& sessionManager)
+HttpServer::HttpServer(HttpApiServerSettings settings, SessionManager &sessionManager)
     : settings(std::move(settings)), sessionManager(sessionManager) {
         serverLogger = spdlog::get("serverLogger");
         if (!serverLogger) {

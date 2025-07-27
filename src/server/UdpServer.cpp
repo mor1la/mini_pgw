@@ -2,11 +2,11 @@
 
 UdpServer::UdpServer(const UdpServerSettings settings, SessionManager &sessionManager) :
     settings(settings), sessionManager(sessionManager) {
-        serverLogger = spdlog::get("serverLogger");
-        if (!serverLogger) {
-            throw std::logic_error("Global serverLogger is not initialized");
-        }
+    serverLogger = spdlog::get("serverLogger");
+    if (!serverLogger) {
+        throw std::logic_error("Global serverLogger is not initialized");
     }
+}
  
 void UdpServer::start() {
     if (isRunning.load()) {
@@ -16,7 +16,6 @@ void UdpServer::start() {
     isRunning = true;
     run(); 
 }
-
 
 void UdpServer::stop() {
     isRunning = false;
@@ -77,7 +76,7 @@ void UdpServer::run() {
     }
 }
 
-void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr) {
+void UdpServer::handleImsi(const std::string &bcd_imsi, sockaddr_in &client_addr) {
     std::string imsi = decodeBcd(bcd_imsi);
 
     if (imsi.empty()) {
@@ -98,8 +97,7 @@ void UdpServer::handleImsi(const std::string& bcd_imsi, sockaddr_in& client_addr
            (sockaddr*)&client_addr, sizeof(client_addr));
 }
 
-
-std::string UdpServer::decodeBcd(const std::string& data) {
+std::string UdpServer::decodeBcd(const std::string &data) {
     std::string result;
     for (unsigned char byte : data) {
         int low = byte & 0x0F;

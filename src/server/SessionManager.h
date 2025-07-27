@@ -12,8 +12,7 @@
 
 class SessionManager {
 public:
-    //SessionManager(int timeoutSeconds, std::unordered_set<std::string> blacklist, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
-    SessionManager(const SessionManagerSettings settings, CdrWriter& cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
+    SessionManager(const SessionManagerSettings settings, CdrWriter &cdrWriter, std::shared_ptr<spdlog::logger> logger = nullptr);
     bool initSession(const std::string &imsi);
     bool isBlacklisted(const std::string &imsi) const;
 
@@ -29,7 +28,7 @@ private:
     const SessionManagerSettings settings;
     mutable std::mutex sessionMutex;
     std::unordered_map<std::string, std::chrono::steady_clock::time_point> sessions;
-    CdrWriter& cdrWriter;
+    CdrWriter &cdrWriter;
     std::shared_ptr<spdlog::logger> serverLogger;
 };
 

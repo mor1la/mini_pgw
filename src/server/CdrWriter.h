@@ -20,15 +20,15 @@ public:
         Update
     };
 
-    CdrWriter(const std::string& filename, std::shared_ptr<spdlog::logger> logger = nullptr);
+    CdrWriter(const std::string &filename, std::shared_ptr<spdlog::logger> logger = nullptr);
     ~CdrWriter();
 
-    virtual void write(const std::string& imsi, Action action);
+    virtual void write(const std::string &imsi, Action action);
 
 private:
     std::string getTimestamp();  
     std::string actionToString(Action action);
-    
+
     std::ofstream cdrFile;
     std::mutex writeMutex;
     std::shared_ptr<spdlog::logger> serverLogger;

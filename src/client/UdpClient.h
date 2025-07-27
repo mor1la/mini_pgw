@@ -17,8 +17,8 @@
 class UdpClient {
 public:
     UdpClient();
-    bool sendImsi(const std::string& imsi); 
-    static std::string encodeBcd(const std::string& imsi);
+    bool sendImsi(const std::string &imsi); 
+    static std::string encodeBcd(const std::string &imsi);
     ClientSettings getClientSettings();
 
 private:

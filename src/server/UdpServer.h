@@ -16,7 +16,7 @@
 
 class UdpServer {
 public:
-    UdpServer(const UdpServerSettings settings, SessionManager& sessionManager);
+    UdpServer(const UdpServerSettings settings, SessionManager &sessionManager);
     void start();
     void stop();
     
@@ -26,7 +26,7 @@ private:
     std::string decodeBcd(const std::string &data);
 
     const UdpServerSettings settings;
-    SessionManager& sessionManager;
+    SessionManager &sessionManager;
     std::shared_ptr<spdlog::logger> serverLogger;
     int socket_fd{-1};
     int epoll_fd{-1};
