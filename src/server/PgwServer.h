@@ -23,6 +23,8 @@ public:
 private:
     void initLogging(LoggerSettings loggerSettings);
     void loadConfiguration();
+    void registerSignalHandlers();
+    static void handleSignal(int signal);
 
     std::unique_ptr<SessionManager> sessionManager;
     std::unique_ptr<CdrWriter> cdrWriter;
@@ -38,9 +40,6 @@ private:
     std::atomic<bool> terminateRequested{false};
 
     std::shared_ptr<spdlog::logger> serverLogger;
-
-    void registerSignalHandlers();
-    static void handleSignal(int signal);
 };
 
 #endif 
