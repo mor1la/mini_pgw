@@ -1,5 +1,5 @@
 #pragma once
-#include "../../server/CdrWriter.h"
+#include "../src/server/CdrWriter.h"
 #include <gmock/gmock.h>
 
 class MockCdrWriter : public CdrWriter {

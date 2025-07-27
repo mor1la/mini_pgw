@@ -87,25 +87,26 @@ set_target_properties(pgw_client PROPERTIES
 
 enable_testing()
 
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+file(GLOB_RECURSE COMMON_SOURCES src/common/*.cpp)
+file(GLOB_RECURSE SERVER_SOURCES src/server/*.cpp)
+file(GLOB_RECURSE CLIENT_SOURCES src/client/*.cpp)
+
+list(FILTER SERVER_SOURCES EXCLUDE REGEX ".*/main.cpp$")
+list(FILTER CLIENT_SOURCES EXCLUDE REGEX ".*/main.cpp$")
+
 add_executable(
     unit_tests
-    src/tests/SessionManagerTest.cpp
-    src/tests/ConfigLoaderTest.cpp
-    src/tests/UdpClientTest.cpp
-    src/tests/mocks/MockCdrWriter.h
-    src/server/SessionManager.cpp 
-    src/server/CdrWriter.cpp 
-    src/common/ConfigLoader/ServerConfigLoader.cpp
-    src/common/ConfigLoader/ClientConfigLoader.cpp
-    src/client/UdpClient.cpp
-    src/common
-    src/server
-    src/client
+    ${TEST_SOURCES}
+    ${COMMON_SOURCES}
+    ${SERVER_SOURCES}
+    ${CLIENT_SOURCES}
 )
 
 target_link_libraries(unit_tests
     gtest gmock gtest_main
     pthread
+    spdlog::spdlog
 )
 
 target_include_directories(unit_tests PRIVATE
@@ -113,8 +114,11 @@ target_include_directories(unit_tests PRIVATE
     ${spdlog_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/common
-    ${CMAKE_SOURCE_DIR}/src/tests
+    ${CMAKE_SOURCE_DIR}/tests
 )
 
+set_target_properties(unit_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
 
 add_test(NAME AllTests COMMAND unit_tests)
