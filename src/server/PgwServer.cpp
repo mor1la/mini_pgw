@@ -17,23 +17,23 @@ PgwServer::~PgwServer() {
 
 
 void PgwServer::initLogging(LoggerSettings loggerSettings) {
-    serverLogger = spdlog::basic_logger_mt("serverLogger", loggerSettings.log_file);
+    serverLogger = spdlog::basic_logger_mt("serverLogger", loggerSettings.logFile);
     serverLogger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
     
-    if (loggerSettings.log_level == "DEBUG") {
+    if (loggerSettings.logLevel == "DEBUG") {
         serverLogger->set_level(spdlog::level::debug);
-    } else if (loggerSettings.log_level == "INFO") {
+    } else if (loggerSettings.logLevel == "INFO") {
         serverLogger->set_level(spdlog::level::info);
-    } else if (loggerSettings.log_level == "WARN") {
+    } else if (loggerSettings.logLevel == "WARN") {
         serverLogger->set_level(spdlog::level::warn);
-    } else if (loggerSettings.log_level == "ERROR") {
+    } else if (loggerSettings.logLevel == "ERROR") {
         serverLogger->set_level(spdlog::level::err);
     } else {
         serverLogger->set_level(spdlog::level::info); 
     }
     serverLogger->flush_on(spdlog::level::info);
     serverLogger->info("---------------------------------------");
-    serverLogger->info("ServerLogger initialized. Log file: {}, level: {}", loggerSettings.log_file, loggerSettings.log_level);
+    serverLogger->info("ServerLogger initialized. Log file: {}, level: {}", loggerSettings.logFile, loggerSettings.logLevel);
 }
 
 void PgwServer::loadConfiguration() {

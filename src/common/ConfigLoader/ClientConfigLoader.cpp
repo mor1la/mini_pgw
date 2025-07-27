@@ -12,10 +12,10 @@ ClientSettings ClientConfigLoader::loadFromFile(const std::string& path) {
     ClientSettings settings;
 
     try {
-        settings.server_ip = j.at("server_ip").get<std::string>();
-        settings.server_port = j.at("server_port").get<int>();
-        settings.log_file = j.at("log_file").get<std::string>();
-        settings.log_level = j.at("log_level").get<std::string>();
+        settings.serverIp = j.at("server_ip").get<std::string>();
+        settings.serverPort = j.at("server_port").get<int>();
+        settings.logFile = j.at("log_file").get<std::string>();
+        settings.logLevel = j.at("log_level").get<std::string>();
     } catch (const nlohmann::json::exception& e) {
         throw std::runtime_error(std::string("Invalid or missing config field: ") + e.what());
     }

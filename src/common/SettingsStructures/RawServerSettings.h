@@ -4,14 +4,14 @@
 #include <unordered_set>
 
 struct RawServerSettings {
-    std::string udp_ip;
-    int udp_port;
-    int session_timeout_sec;
-    std::string cdr_file;
-    int http_port;
-    int graceful_shutdown_rate;
-    std::string log_file;
-    std::string log_level;
+    std::string udpIp;
+    int udpPort;
+    int sessionTimeoutSec;
+    std::string cdrFile;
+    int httpPort;
+    int gracefulShutdownRate;
+    std::string logFile;
+    std::string logLevel;
     std::unordered_set<std::string> blacklist;
 };
 

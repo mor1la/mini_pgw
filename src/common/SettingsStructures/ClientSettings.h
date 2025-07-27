@@ -3,10 +3,10 @@
 #include <string>
 
 struct ClientSettings {
-    std::string server_ip;
-    int server_port;
-    std::string log_file;
-    std::string log_level;
+    std::string serverIp;
+    int serverPort;
+    std::string logFile;
+    std::string logLevel;
 };
 
 

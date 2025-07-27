@@ -31,23 +31,23 @@ ClientSettings UdpClient::getClientSettings() {
 }
 
 void UdpClient::initLogging() {
-    clientLogger = spdlog::basic_logger_mt("clientLogger", clientSettings.log_file);
+    clientLogger = spdlog::basic_logger_mt("clientLogger", clientSettings.logFile);
     clientLogger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
     
-    if (clientSettings.log_level == "DEBUG") {
+    if (clientSettings.logLevel == "DEBUG") {
         clientLogger->set_level(spdlog::level::debug);
-    } else if (clientSettings.log_level == "INFO") {
+    } else if (clientSettings.logLevel == "INFO") {
         clientLogger->set_level(spdlog::level::info);
-    } else if (clientSettings.log_level == "WARN") {
+    } else if (clientSettings.logLevel == "WARN") {
         clientLogger->set_level(spdlog::level::warn);
-    } else if (clientSettings.log_level == "ERROR") {
+    } else if (clientSettings.logLevel == "ERROR") {
         clientLogger->set_level(spdlog::level::err);
     } else {
         clientLogger->set_level(spdlog::level::info); 
     }
     clientLogger->flush_on(spdlog::level::info);
     clientLogger->info("---------------------------------------");
-    clientLogger->info("ClientLogger initialized. Log file: {}, level: {}", clientSettings.log_file, clientSettings.log_level);
+    clientLogger->info("ClientLogger initialized. Log file: {}, level: {}", clientSettings.logFile, clientSettings.logLevel);
 }
 
 bool UdpClient::send_imsi(const std::string& imsi) {
@@ -66,9 +66,9 @@ bool UdpClient::send_imsi(const std::string& imsi) {
 
     sockaddr_in server_addr{};
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(clientSettings.server_port);
-    if (inet_pton(AF_INET, clientSettings.server_ip.c_str(), &server_addr.sin_addr) <= 0) {
-        clientLogger->error("Invalid server IP address: {}", clientSettings.server_ip);
+    server_addr.sin_port = htons(clientSettings.serverPort);
+    if (inet_pton(AF_INET, clientSettings.serverIp.c_str(), &server_addr.sin_addr) <= 0) {
+        clientLogger->error("Invalid server IP address: {}", clientSettings.serverIp);
         close(sockfd);
         return false;
     }

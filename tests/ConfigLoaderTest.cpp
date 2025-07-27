@@ -53,14 +53,14 @@ TEST_F(ConfigLoaderTest, LoadValidServerConfig) {
     ServerConfigLoader loader;
     RawServerSettings settings = loader.loadFromFile(serverConfigPath);
 
-    EXPECT_EQ(settings.udp_ip, "0.0.0.0");
-    EXPECT_EQ(settings.udp_port, 9000);
-    EXPECT_EQ(settings.session_timeout_sec, 30);
-    EXPECT_EQ(settings.cdr_file, "cdr.log");
-    EXPECT_EQ(settings.http_port, 8080);
-    EXPECT_EQ(settings.graceful_shutdown_rate, 10);
-    EXPECT_EQ(settings.log_file, "pgw.log");
-    EXPECT_EQ(settings.log_level, "INFO");
+    EXPECT_EQ(settings.udpIp, "0.0.0.0");
+    EXPECT_EQ(settings.udpPort, 9000);
+    EXPECT_EQ(settings.sessionTimeoutSec, 30);
+    EXPECT_EQ(settings.cdrFile, "cdr.log");
+    EXPECT_EQ(settings.httpPort, 8080);
+    EXPECT_EQ(settings.gracefulShutdownRate, 10);
+    EXPECT_EQ(settings.logFile, "pgw.log");
+    EXPECT_EQ(settings.logLevel, "INFO");
     EXPECT_EQ(settings.blacklist.size(), 2);
     EXPECT_TRUE(settings.blacklist.count("001010123456789"));
     EXPECT_TRUE(settings.blacklist.count("001010000000001"));
@@ -70,10 +70,10 @@ TEST_F(ConfigLoaderTest, LoadValidClientConfig) {
     ClientConfigLoader loader;
     ClientSettings settings = loader.loadFromFile(clientConfigPath);
 
-    EXPECT_EQ(settings.server_ip, "127.0.0.1");
-    EXPECT_EQ(settings.server_port, 9000);
-    EXPECT_EQ(settings.log_file, "client.log");
-    EXPECT_EQ(settings.log_level, "INFO");
+    EXPECT_EQ(settings.serverIp, "127.0.0.1");
+    EXPECT_EQ(settings.serverPort, 9000);
+    EXPECT_EQ(settings.logFile, "client.log");
+    EXPECT_EQ(settings.logLevel, "INFO");
 }
 
 TEST_F(ConfigLoaderTest, MissingServerConfigFileThrows) {
