@@ -77,9 +77,6 @@ void PgwServer::start() {
     serverLogger->info("Starting session cleanup thread...");
     while (cleanupRunning) {
         auto expiredSessions = sessionManager->cleanupExpiredSessions();
-        for (const auto& session : expiredSessions) {
-            cdrWriter->write(session, CdrWriter::Action::Delete);
-        }
         std::this_thread::sleep_for(std::chrono::milliseconds(500)); 
     }});
 
