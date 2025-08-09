@@ -1,7 +1,6 @@
 #include "UdpClient.h"
 
-UdpClient::UdpClient()
-    : clientSettings(clientSettings) {
+UdpClient::UdpClient() {
     loadConfiguration();
     clientLogger = spdlog::get("clientLogger");
     if (!clientLogger) {
